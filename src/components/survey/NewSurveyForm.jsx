@@ -1,23 +1,32 @@
 import React, { useState } from "react";
+import { Question } from "./Question";
 
 export const NewSurveyForm = () => {
   const [questions, setQuestions] = useState([]);
+  const [title, setTitle] = useState("");
   const [newQuestion, setNewQuestion] = useState("");
   const [answerType, setAnswerType] = useState("text");
 
   const handleAddQuestion = () => {
     if (newQuestion.trim() === "") {
-      return;
+      return; // Don't add empty questions
     }
 
     const question = {
       text: newQuestion,
       type: answerType,
+      answers: answerType === "text" ? undefined : [],
     };
 
     setQuestions([...questions, question]);
     setNewQuestion("");
     setAnswerType("text");
+  };
+
+  const handleUpdateQuestion = (index, updatedQuestion) => {
+    const updatedQuestions = [...questions];
+    updatedQuestions[index] = updatedQuestion;
+    setQuestions(updatedQuestions);
   };
 
   const handleRemoveQuestion = (index) => {
@@ -28,9 +37,17 @@ export const NewSurveyForm = () => {
 
   return (
     <div>
-      <h3>Create a New Survey</h3>
+      <h3>
+        Título -
+        <input
+          type="text"
+          placeholder={"Nueva Encuesta"}
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+      </h3>
       <div>
-        <label>Add Question:</label>
+        <label>Añadir pregunta</label>
         <input
           type="text"
           value={newQuestion}
@@ -43,16 +60,20 @@ export const NewSurveyForm = () => {
           <option value="text">Text</option>
           <option value="multipleChoice">Multiple Choice</option>
           <option value="checkbox">Checkbox</option>
-          {/* Add more options for different answer types if needed */}
         </select>
         <button onClick={handleAddQuestion}>Add</button>
       </div>
       <div>
         {questions.map((question, index) => (
-          <div key={index}>
-            <p>{question.text}</p>
-            <p>Type: {question.type}</p>
-            <button onClick={() => handleRemoveQuestion(index)}>Remove</button>
+          <div>
+            <br />
+            <Question
+              key={index}
+              index={index}
+              question={question}
+              onUpdate={handleUpdateQuestion}
+              onRemove={() => handleRemoveQuestion(index)}
+            />
           </div>
         ))}
       </div>
