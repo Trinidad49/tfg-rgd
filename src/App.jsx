@@ -1,11 +1,15 @@
 import "./App.css";
+import { useState } from "react";
 import { LoginForm } from "./components/login/LoginForm";
 import { RegisterForm } from "./components/login/RegisterForm";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-
+import { Dashboard } from "./components/survey/Dashboard";
 const App = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   const handleLogin = (email, password) => {
     //Logica del login
+    setIsLoggedIn(true);
     console.log("Logging in with:", email, password);
   };
 
@@ -21,7 +25,14 @@ const App = () => {
           path="/register"
           element={<RegisterForm onRegister={handleRegister} />}
         />
-        <Route exact path="/" element={<LoginForm onLogin={handleLogin} />} />
+        <Route path="/home" element={<Dashboard />} />
+        <Route
+          exact
+          path="/"
+          element={
+            isLoggedIn ? <Dashboard /> : <LoginForm onLogin={handleLogin} />
+          }
+        />
       </Routes>
     </Router>
   );
