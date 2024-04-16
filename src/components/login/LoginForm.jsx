@@ -7,11 +7,44 @@ export const LoginForm = ({ onLogin }) => {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
+  // Log in a user using email and password
+  const logIn = async (email, password) => {
+    console.log("Logging in with: ", email, password);
+    try {
+      const response = await fetch("http://localhost:3080/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+      console.log(data);
+
+      if (response.ok) {
+        // Login successful, handle token
+        const token = data.token;
+        // Store token in local storage or session storage for subsequent requests
+        localStorage.setItem("token", token);
+        onLogin();
+        return { success: true, token };
+      } else {
+        // Login failed, handle error message
+        return { success: false, message: data.message };
+      }
+    } catch (error) {
+      // Handle network errors
+      return { success: false, message: "Network error" };
+    }
+  };
+
   const handleLogin = (e) => {
     e.preventDefault();
     setEmailError("");
     setPasswordError("");
 
+    //validate email and password
     if ("" === email) {
       setEmailError("Please enter your email");
       return;
@@ -31,9 +64,7 @@ export const LoginForm = ({ onLogin }) => {
       setPasswordError("The password must be 8 characters or longer");
       return;
     }
-
-    //Añadir logica para el login
-    onLogin(email, password);
+    logIn(email, password);
   };
 
   return (

@@ -4,19 +4,15 @@ import { LoginForm } from "./components/login/LoginForm";
 import { RegisterForm } from "./components/login/RegisterForm";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Dashboard } from "./components/survey/Dashboard";
+
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const handleLogin = (email, password) => {
-    //Logica del login
     setIsLoggedIn(true);
-    console.log("Logging in with:", email, password);
   };
 
-  const handleRegister = (email, password) => {
-    //Logica de registro
-    console.log("Registering with:", email, password);
-  };
+  const handleRegister = (email, password) => {};
 
   return (
     <Router>
