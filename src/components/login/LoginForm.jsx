@@ -1,5 +1,13 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import {
+  TextField,
+  Button,
+  Paper,
+  Box,
+  Typography,
+  Stack,
+} from "@mui/material";
 
 export const LoginForm = ({ onLogin }) => {
   const [email, setEmail] = useState("");
@@ -68,32 +76,54 @@ export const LoginForm = ({ onLogin }) => {
   };
 
   return (
-    <form onSubmit={handleLogin}>
-      <h2>Login</h2>
-      <div>
-        <input
-          type="email"
-          value={email}
-          placeholder="Email"
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <label>{emailError}</label>
-      </div>
-      <div>
-        <input
-          type="password"
-          value={password}
-          placeholder="Contraseña"
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <label>{passwordError}</label>
-      </div>
-      <button onClick={handleLogin}>Login</button>
-      <p>
-        ¿No tienes cuenta? <Link to="/register">Registrate</Link>
-      </p>
-    </form>
+    <Box
+      sx={{
+        marginTop: 15,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
+    >
+      <Paper elevation={3}>
+        <Box p={3} minWidth={400}>
+          <form onSubmit={handleLogin}>
+            <Stack spacing={2}>
+              <Typography align="center" component="h1" variant="h5">
+                LogIn
+              </Typography>
+              <TextField
+                id="outlined-basic"
+                label="Email"
+                variant="outlined"
+                onChange={(e) => setEmail(e.target.value)}
+                value={email}
+                error={emailError !== ""}
+                helperText={emailError}
+              />
+              <TextField
+                id="outlined-basic"
+                label="Contraseña"
+                variant="outlined"
+                onChange={(e) => setPassword(e.target.value)}
+                value={password}
+                error={passwordError !== ""}
+                helperText={passwordError}
+              />
+            </Stack>
+            <Button
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+              onClick={handleLogin}
+            >
+              LogIn
+            </Button>
+            <p style={{ textAlign: "end" }}>
+              ¿No tienes cuenta? <Link to="/register">Registrate</Link>
+            </p>
+          </form>
+        </Box>
+      </Paper>
+    </Box>
   );
 };

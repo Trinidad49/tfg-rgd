@@ -1,5 +1,13 @@
+import {
+  Box,
+  Button,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export const RegisterForm = ({ onRegister }) => {
   const [email, setEmail] = useState("");
@@ -69,29 +77,54 @@ export const RegisterForm = ({ onRegister }) => {
   };
 
   return (
-    <form onSubmit={handleRegister}>
-      <h2>Register</h2>
-      <div>
-        <input
-          type="email"
-          value={email}
-          placeholder="Email"
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <label>{emailError}</label>
-      </div>
-      <div>
-        <input
-          type="password"
-          value={password}
-          placeholder="Contraseña"
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <label>{passwordError}</label>
-      </div>
-      <button type="submit">Register</button>
-    </form>
+    <Box
+      sx={{
+        marginTop: 15,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
+    >
+      <Paper elevation={3}>
+        <Box p={3} minWidth={400}>
+          <form onSubmit={handleRegister}>
+            <Stack spacing={2}>
+              <Typography align="center" component="h1" variant="h5">
+                Register
+              </Typography>
+              <TextField
+                id="outlined-basic"
+                label="Email"
+                variant="outlined"
+                onChange={(e) => setEmail(e.target.value)}
+                value={email}
+                error={emailError !== ""}
+                helperText={emailError}
+              />
+              <TextField
+                id="outlined-basic"
+                label="Contraseña"
+                variant="outlined"
+                onChange={(e) => setPassword(e.target.value)}
+                value={password}
+                error={passwordError !== ""}
+                helperText={passwordError}
+              />
+            </Stack>
+            <Button
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+              onClick={handleRegister}
+            >
+              Register
+            </Button>
+            <Button variant="text">
+              <Link to="/">Volver</Link>
+            </Button>
+          </form>
+        </Box>
+      </Paper>
+    </Box>
   );
 };
