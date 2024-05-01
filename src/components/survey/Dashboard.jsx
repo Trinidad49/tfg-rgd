@@ -1,33 +1,56 @@
 import React, { useState } from "react";
 import { NewSurveyForm } from "./NewSurveyForm";
 import { SurveyList } from "./SurveyList";
+import {
+  Container,
+  Drawer,
+  Grid,
+  List,
+  ListItem,
+  ListItemText,
+  Typography,
+} from "@mui/material";
 
 export const Dashboard = () => {
-  const [showNewSurveyForm, setShowNewSurveyForm] = useState(false);
-  const [showSurveys, setShowSurveys] = useState(true);
-  const handleNewSurvey = () => {
-    setShowNewSurveyForm(true);
-    setShowSurveys(false);
+  const [selectedOption, setSelectedOption] = useState("Home");
+
+  const handleOptionClick = (option) => {
+    setSelectedOption(option);
   };
-  const handleSurveys = () => {
-    setShowNewSurveyForm(false);
-    setShowSurveys(true);
-  };
+
   return (
-    <div>
-      <h2>Dashboard</h2>
-      <div className="tab">
-        <button className="tablinks" onClick={handleSurveys}>
-          Encuestas
-        </button>
-        <button className="tablinks" onClick={handleNewSurvey}>
-          Crear una encuesta
-        </button>
-      </div>
-      <div className="tabcontent">
-        {showNewSurveyForm ? <NewSurveyForm /> : ""}
-        {showSurveys ? <SurveyList /> : ""}
-      </div>
-    </div>
+    <Container maxWidth="lg" style={{ paddingTop: 20 }}>
+      <Grid container spacing={3}>
+        <Grid item xs={3}>
+          <Drawer variant="permanent" anchor="left">
+            <List>
+              {["Surveys", "New Survey"].map((option, index) => (
+                <ListItem
+                  key={option}
+                  onClick={() => handleOptionClick(option)}
+                >
+                  <ListItemText primary={option} />
+                </ListItem>
+              ))}
+            </List>
+          </Drawer>
+        </Grid>
+        <Grid item xs={9}>
+          <Typography variant="h4" gutterBottom>
+            {selectedOption}
+          </Typography>
+          {selectedOption === "Surveys" && (
+            <div>
+              <SurveyList />
+            </div>
+          )}
+          {selectedOption === "New Survey" && (
+            <div>
+              <NewSurveyForm />
+            </div>
+          )}
+        </Grid>
+      </Grid>
+    </Container>
   );
 };

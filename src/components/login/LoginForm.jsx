@@ -17,7 +17,6 @@ export const LoginForm = ({ onLogin }) => {
 
   // Log in a user using email and password
   const logIn = async (email, password) => {
-    console.log("Logging in with: ", email, password);
     try {
       const response = await fetch("http://localhost:3080/login", {
         method: "POST",
@@ -28,15 +27,15 @@ export const LoginForm = ({ onLogin }) => {
       });
 
       const data = await response.json();
-      console.log(data);
 
       if (response.ok) {
         // Login successful, handle token
-        const token = data.token;
+        /*const token = data.token;
         // Store token in local storage or session storage for subsequent requests
-        localStorage.setItem("token", token);
+        localStorage.setItem("token", token);*/
+        localStorage.setItem("userID", data.id);
         onLogin();
-        return { success: true, token };
+        return { success: true };
       } else {
         // Login failed, handle error message
         return { success: false, message: data.message };
