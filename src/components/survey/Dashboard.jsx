@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { NewSurveyForm } from "./NewSurveyForm";
+import { SurveyForm } from "./SurveyForm";
 import { SurveyList } from "./SurveyList";
 import {
   Container,
@@ -46,7 +46,7 @@ export const Dashboard = () => {
           )}
           {selectedOption === "New Survey" && (
             <div>
-              <NewSurveyForm />
+              <SurveyForm />
             </div>
           )}
         </Grid>

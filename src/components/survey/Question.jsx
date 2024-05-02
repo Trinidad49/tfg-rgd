@@ -1,111 +1,110 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
-  Card,
-  CardContent,
-  Typography,
+  TextField,
+  MenuItem,
   IconButton,
-  Switch,
+  CardContent,
+  Card,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import CloseIcon from "@mui/icons-material/Close";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import CloseIcon from "@mui/icons-material/Close";
 
 export const Question = ({ index, question, onUpdate, onRemove }) => {
-  const [editedQuestion, setEditedQuestion] = useState(question.text);
-  const [editedType, setEditedType] = useState(question.type);
-  const [editedAnswers, setEditedAnswers] = useState(question.answers || []);
-  const [mandatory, setMandatory] = useState(question.mandatory || false);
+  const handleUpdateText = (text) => {
+    onUpdate(index, { ...question, text });
+  };
 
-  useEffect(() => {
-    if (editedType === "multipleChoice" || editedType === "checkbox") {
-      setEditedAnswers([""]);
-    }
-  }, [editedType]);
+  const handleUpdateType = (type) => {
+    onUpdate(index, { ...question, type });
+  };
 
   const handleAddAnswer = () => {
-    setEditedAnswers([...editedAnswers, ""]);
+    onUpdate(index, {
+      ...question,
+      answers: [...question.answers, ""],
+    });
   };
 
   const handleRemoveAnswer = (answerIndex) => {
-    const updatedAnswers = [...editedAnswers];
-    updatedAnswers.splice(answerIndex, 1);
-    setEditedAnswers(updatedAnswers);
-  };
-
-  const handleAnswerChange = (answerIndex, value) => {
-    const updatedAnswers = [...editedAnswers];
-    updatedAnswers[answerIndex] = value;
-    setEditedAnswers(updatedAnswers);
-  };
-
-  useEffect(() => {
+    const updatedAnswers = question.answers.filter(
+      (_, index) => index !== answerIndex
+    );
     onUpdate(index, {
-      text: editedQuestion,
-      type: editedType,
-      answers: editedAnswers,
-      mandatory: mandatory,
+      ...question,
+      answers: updatedAnswers,
     });
-  }, [editedQuestion, editedType, editedAnswers, mandatory]);
+  };
+
+  const handleUpdateAnswer = (answerIndex, value) => {
+    const updatedAnswers = [...question.answers];
+    updatedAnswers[answerIndex] = value;
+    onUpdate(index, {
+      ...question,
+      answers: updatedAnswers,
+    });
+  };
 
   return (
     <Card variant="outlined" style={{ marginBottom: "16px" }}>
       <CardContent>
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <Typography variant="h6">Question {index + 1}</Typography>
-          <IconButton onClick={onRemove}>
+        <div
+          style={{ display: "flex", alignItems: "center", marginBottom: "8px" }}
+        >
+          <TextField
+            label="Question Text"
+            value={question.text}
+            onChange={(e) => handleUpdateText(e.target.value)}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            select
+            value={question.type}
+            onChange={(e) => handleUpdateType(e.target.value)}
+            margin="normal"
+          >
+            <MenuItem value="text">Text</MenuItem>
+            <MenuItem value="multipleChoice">Multiple Choice</MenuItem>
+            <MenuItem value="checkbox">Checkbox</MenuItem>
+          </TextField>
+          <IconButton
+            onClick={() => onRemove(index)}
+            style={{ marginLeft: "8px" }}
+          >
             <DeleteIcon />
           </IconButton>
         </div>
-        <input
-          type="text"
-          value={editedQuestion}
-          onChange={(e) => setEditedQuestion(e.target.value)}
-          style={{ marginBottom: "8px" }}
-        />
-        <select
-          value={editedType}
-          onChange={(e) => setEditedType(e.target.value)}
-          style={{ marginBottom: "8px" }}
-        >
-          <option value="text">Text</option>
-          <option value="multipleChoice">Multiple Choice</option>
-          <option value="checkbox">Checkbox</option>
-        </select>
-        {editedType !== "text" && (
+        {question.type !== "text" && (
           <div>
-            {editedAnswers.map((answer, answerIndex) => (
+            {question.answers.map((answer, answerIndex) => (
               <div
                 key={answerIndex}
-                style={{ display: "flex", marginBottom: "8px" }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginBottom: "8px",
+                }}
               >
-                <input
-                  type="text"
-                  value={answer}
+                <TextField
+                  label="Answer"
+                  value={answer.text}
                   onChange={(e) =>
-                    handleAnswerChange(answerIndex, e.target.value)
+                    handleUpdateAnswer(answerIndex, e.target.value)
                   }
+                  fullWidth
+                  margin="normal"
                 />
                 <IconButton onClick={() => handleRemoveAnswer(answerIndex)}>
                   <CloseIcon />
                 </IconButton>
               </div>
             ))}
-            <IconButton
-              onClick={handleAddAnswer}
-              style={{ marginBottom: "8px" }}
-            >
+            <IconButton onClick={handleAddAnswer}>
               <AddCircleOutlineIcon />
             </IconButton>
           </div>
         )}
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <Typography variant="body2">Mandatory</Typography>
-          <Switch
-            checked={mandatory}
-            onChange={() => setMandatory(!mandatory)}
-            color="primary"
-          />
-        </div>
       </CardContent>
     </Card>
   );

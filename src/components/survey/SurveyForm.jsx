@@ -1,16 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { TextField, Button, IconButton } from "@mui/material";
+import SaveIcon from "@mui/icons-material/Save";
 import { Question } from "./Question";
 
-export const NewSurveyForm = () => {
-  const [questions, setQuestions] = useState([]);
+export const SurveyForm = ({ survey }) => {
   const [title, setTitle] = useState("");
+  const [questions, setQuestions] = useState([]);
   const [id, setId] = useState("");
+
+  useEffect(() => {
+    if (survey) {
+      setTitle(survey.title);
+      setQuestions(survey.questions);
+      setId(survey._id);
+    }
+  }, [survey]);
 
   const handleAddQuestion = () => {
     const newQuestion = {
       text: "",
       type: "text",
-      answers: undefined,
+      answers: [],
     };
     setQuestions([...questions, newQuestion]);
   };
@@ -41,7 +51,7 @@ export const NewSurveyForm = () => {
         })),
       };
 
-      //Send the id if present
+      //Update data when id is present
       if (id !== "") {
         sendData._id = id;
       }
@@ -54,39 +64,49 @@ export const NewSurveyForm = () => {
       });
 
       const data = await response.json();
-      //Retrieve an ID if not present
+      //Retrieve an ID from new survey
       if (id === "") {
         setId(data._id);
       }
-      console.log(data);
     } catch (error) {}
   };
 
   return (
     <div>
-      <h3>
-        Título -
-        <input
-          type="text"
-          placeholder={"Nueva Encuesta"}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <TextField
+          label="Survey Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
+          fullWidth
+          margin="normal"
         />
-        <button onClick={handleSaveSurvey}>Save</button>
-      </h3>
-      <div>
-        {questions.map((question, index) => (
-          <div key={index}>
-            <Question
-              index={index}
-              question={question}
-              onUpdate={handleUpdateQuestion}
-              onRemove={() => handleRemoveQuestion(index)}
-            />
-          </div>
-        ))}
-        <button onClick={handleAddQuestion}>Add</button>
+        <IconButton
+          color="primary"
+          onClick={handleSaveSurvey}
+          style={{ marginLeft: "15px", marginRight: "15px" }}
+        >
+          <SaveIcon />
+        </IconButton>
       </div>
+      {questions.map((question, index) => (
+        <Question
+          key={index}
+          index={index}
+          question={question}
+          onUpdate={handleUpdateQuestion}
+          onRemove={handleRemoveQuestion}
+        />
+      ))}
+      <Button variant="contained" onClick={handleAddQuestion}>
+        Add Question
+      </Button>
     </div>
   );
 };
