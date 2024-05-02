@@ -46,7 +46,9 @@ export const SurveyForm = ({ survey }) => {
         questions: questions.map((question) => ({
           text: question.text,
           type: question.type,
-          answers: question.answers,
+          answers: question.answers.map((answer) =>
+            answer.text ? answer.text : answer
+          ),
           mandatory: question.mandatory,
         })),
       };
