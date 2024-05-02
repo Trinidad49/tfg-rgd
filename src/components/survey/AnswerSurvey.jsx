@@ -1,8 +1,16 @@
 import { useState, useEffect } from "react";
-import { TextField, MenuItem, Button } from "@mui/material";
+import {
+  TextField,
+  MenuItem,
+  Button,
+  Container,
+  Grid,
+  Typography,
+} from "@mui/material";
 
 export const AnswerSurvey = ({ surveyID }) => {
   const [surveyData, setSurveyData] = useState(null);
+  const [userAnswers, setUserAnswers] = useState([]);
 
   useEffect(() => {
     const fetchSurveys = async () => {
@@ -20,6 +28,8 @@ export const AnswerSurvey = ({ surveyID }) => {
         const data = await response.json();
         if (data.length > 0) {
           setSurveyData(data[0]);
+          // Initialize userAnswers state with empty answers for each question
+          setUserAnswers(data[0].questions.map(() => ({ answer: "" })));
         }
       } catch (error) {
         console.error("Error fetching surveys:", error);
@@ -29,14 +39,25 @@ export const AnswerSurvey = ({ surveyID }) => {
   }, [surveyID]);
 
   const handleAnswerChange = (questionIndex, answer) => {
-    const updatedSurveyData = { ...surveyData };
-    updatedSurveyData.questions[questionIndex].answer = answer;
-    setSurveyData(updatedSurveyData);
+    setUserAnswers((prevUserAnswers) => {
+      const updatedAnswers = [...prevUserAnswers];
+      updatedAnswers[questionIndex] = { answer };
+      return updatedAnswers;
+    });
   };
 
   const handleSaveAnswers = () => {
-    // Implement saving answers logic here
-    console.log("Answers saved:", surveyData);
+    // Combine survey ID with user answers for submission
+    const surveyWithAnswers = {
+      surveyID,
+      questions: surveyData.questions.map((question, index) => ({
+        text: question.text,
+        answer: userAnswers[index].answer,
+      })),
+    };
+
+    // Implement logic to save survey
+    console.log("Answers saved:", surveyWithAnswers);
   };
 
   if (!surveyData) {
@@ -44,41 +65,46 @@ export const AnswerSurvey = ({ surveyID }) => {
   }
 
   return (
-    <div>
-      <h1>{surveyID}</h1>
-      <h2>{surveyData.title}</h2>
-      {surveyData.questions.map((question, index) => (
-        <div key={index}>
-          <h3>{question.text}</h3>
-          {question.type === "text" ? (
-            <TextField
-              label="Your Answer"
-              value={question.answer || ""}
-              onChange={(e) => handleAnswerChange(index, e.target.value)}
-              fullWidth
-              margin="normal"
-            />
-          ) : (
-            <TextField
-              select
-              label="Select Answer"
-              value={question.answer || ""}
-              onChange={(e) => handleAnswerChange(index, e.target.value)}
-              fullWidth
-              margin="normal"
-            >
-              {question.answers.map((option, optionIndex) => (
-                <MenuItem key={optionIndex} value={option.text}>
-                  {option.text}
-                </MenuItem>
-              ))}
-            </TextField>
-          )}
-        </div>
-      ))}{" "}
-      <Button variant="contained" onClick={handleSaveAnswers}>
-        Save Answers
-      </Button>
-    </div>
+    <Container maxWidth="lg">
+      <Grid container spacing={2} direction="column">
+        <Grid item>
+          <Typography variant="h3">{surveyData.title}</Typography>
+        </Grid>
+        {surveyData.questions.map((question, index) => (
+          <Grid item key={index}>
+            <Typography variant="h5">{question.text}</Typography>
+            {question.type === "text" ? (
+              <TextField
+                label="Your Answer"
+                value={userAnswers[index].answer}
+                onChange={(e) => handleAnswerChange(index, e.target.value)}
+                fullWidth
+                margin="normal"
+              />
+            ) : (
+              <TextField
+                select
+                label="Select Answer"
+                value={userAnswers[index].answer}
+                onChange={(e) => handleAnswerChange(index, e.target.value)}
+                fullWidth
+                margin="normal"
+              >
+                {question.answers.map((option, optionIndex) => (
+                  <MenuItem key={optionIndex} value={option.text}>
+                    {option.text}
+                  </MenuItem>
+                ))}
+              </TextField>
+            )}
+          </Grid>
+        ))}
+        <Grid item>
+          <Button variant="contained" onClick={handleSaveAnswers}>
+            Save Answers
+          </Button>
+        </Grid>
+      </Grid>
+    </Container>
   );
 };
