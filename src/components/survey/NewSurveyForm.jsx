@@ -4,6 +4,7 @@ import { Question } from "./Question";
 export const NewSurveyForm = () => {
   const [questions, setQuestions] = useState([]);
   const [title, setTitle] = useState("");
+  const [id, setId] = useState("");
 
   const handleAddQuestion = () => {
     const newQuestion = {
@@ -29,15 +30,34 @@ export const NewSurveyForm = () => {
   const handleSaveSurvey = async () => {
     try {
       const userID = localStorage.getItem("userID");
+      const sendData = {
+        userID: userID,
+        title: title,
+        questions: questions.map((question) => ({
+          text: question.text,
+          type: question.type,
+          answers: question.answers,
+          mandatory: question.mandatory,
+        })),
+      };
+
+      //Send the id if present
+      if (id !== "") {
+        sendData._id = id;
+      }
       const response = await fetch("http://localhost:3080/surveys", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ userID, title, questions }),
+        body: JSON.stringify(sendData),
       });
 
       const data = await response.json();
+      //Retrieve an ID if not present
+      if (id === "") {
+        setId(data._id);
+      }
       console.log(data);
     } catch (error) {}
   };
