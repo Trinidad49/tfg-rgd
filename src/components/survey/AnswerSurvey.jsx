@@ -46,7 +46,7 @@ export const AnswerSurvey = ({ surveyID }) => {
     });
   };
 
-  const handleSaveAnswers = () => {
+  const handleSaveAnswers = async () => {
     // Combine survey ID with user answers for submission
     const surveyWithAnswers = {
       surveyID,
@@ -57,7 +57,16 @@ export const AnswerSurvey = ({ surveyID }) => {
     };
 
     // Implement logic to save survey
-    console.log("Answers saved:", surveyWithAnswers);
+    const response = await fetch("http://localhost:3080/answer", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(surveyWithAnswers),
+    });
+
+    const data = await response.json();
+    console.log("Answers saved:", data);
   };
 
   if (!surveyData) {
