@@ -1,8 +1,7 @@
 import { Card, CardContent, Grid, Typography, Button } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-import CloseIcon from "@mui/icons-material/Close";
 import React, { useState, useEffect } from "react";
-import { SurveyForm } from "./SurveyForm";
+import { SurveyMenu } from "./SurveyMenu";
 
 export const SurveyList = () => {
   const [surveys, setSurveys] = useState([]);
@@ -66,13 +65,7 @@ export const SurveyList = () => {
       )}
       {selectedSurvey && (
         <div>
-          <div>
-            <Typography>Edit Survey</Typography>
-            <Button onClick={handleExitEdit} startIcon={<CloseIcon />}>
-              Exit
-            </Button>
-          </div>
-          <SurveyForm survey={selectedSurvey} />
+          <SurveyMenu survey={selectedSurvey} handleExitEdit={handleExitEdit} />
         </div>
       )}
     </div>
