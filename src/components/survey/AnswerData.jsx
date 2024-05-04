@@ -31,8 +31,13 @@ export const AnswerData = ({ survey }) => {
   }
 
   const getAnswerCount = (optionText, questionIndex) =>
-    surveyData.filter((a) => a.answers[questionIndex]?.answer === optionText)
-      .length;
+    survey.questions[questionIndex].type === "checkbox"
+      ? surveyData.filter((a) =>
+          a.answers[questionIndex]?.answer.includes(optionText)
+        ).length
+      : surveyData.filter(
+          (a) => a.answers[questionIndex]?.answer === optionText
+        ).length;
 
   return (
     <div>

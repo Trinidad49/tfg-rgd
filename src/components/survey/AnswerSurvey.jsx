@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
 import {
   TextField,
-  MenuItem,
   Button,
   Container,
   Grid,
   Typography,
+  FormControlLabel,
+  Checkbox,
+  Radio,
+  RadioGroup,
 } from "@mui/material";
 
 export const AnswerSurvey = ({ surveyID }) => {
@@ -29,7 +32,12 @@ export const AnswerSurvey = ({ surveyID }) => {
         if (data.length > 0) {
           setSurveyData(data[0]);
           // Initialize userAnswers state with empty answers for each question
-          setUserAnswers(data[0].questions.map(() => ({ answer: "" })));
+          console.log(data[0].questions);
+          setUserAnswers(
+            data[0].questions.map((question) => ({
+              answer: question.type === "checkbox" ? [] : "",
+            }))
+          );
         }
       } catch (error) {
         console.error("Error fetching surveys:", error);
@@ -75,45 +83,74 @@ export const AnswerSurvey = ({ surveyID }) => {
 
   return (
     <Container maxWidth="lg">
-      <Grid container spacing={2} direction="column">
-        <Grid item>
-          <Typography variant="h3">{surveyData.title}</Typography>
-        </Grid>
-        {surveyData.questions.map((question, index) => (
-          <Grid item key={index}>
-            <Typography variant="h5">{question.text}</Typography>
-            {question.type === "text" ? (
-              <TextField
-                label="Your Answer"
-                value={userAnswers[index].answer}
-                onChange={(e) => handleAnswerChange(index, e.target.value)}
-                fullWidth
-                margin="normal"
-              />
-            ) : (
-              <TextField
-                select
-                label="Select Answer"
-                value={userAnswers[index].answer}
-                onChange={(e) => handleAnswerChange(index, e.target.value)}
-                fullWidth
-                margin="normal"
-              >
+      <Typography variant="h3">{surveyData.title}</Typography>
+      {surveyData.questions.map((question, index) => (
+        <div key={index}>
+          <Typography variant="h5">{question.text}</Typography>
+          {question.type === "text" ? (
+            <TextField
+              label="Your Answer"
+              value={userAnswers[index].answer}
+              onChange={(e) => handleAnswerChange(index, e.target.value)}
+              fullWidth
+              margin="normal"
+            />
+          ) : question.type === "multipleChoice" ? (
+            <RadioGroup
+              aria-label="quiz"
+              name="quiz"
+              value={userAnswers[index].answer}
+              onChange={(e) => handleAnswerChange(index, e.target.value)}
+            >
+              <Grid container spacing={2}>
                 {question.answers.map((option, optionIndex) => (
-                  <MenuItem key={optionIndex} value={option.text}>
-                    {option.text}
-                  </MenuItem>
+                  <Grid item xs={6} key={optionIndex}>
+                    <FormControlLabel
+                      value={option.text}
+                      control={<Radio />}
+                      label={option.text}
+                    />
+                  </Grid>
                 ))}
-              </TextField>
-            )}
-          </Grid>
-        ))}
-        <Grid item>
-          <Button variant="contained" onClick={handleSaveAnswers}>
-            Save Answers
-          </Button>
-        </Grid>
-      </Grid>
+              </Grid>
+            </RadioGroup>
+          ) : (
+            <Grid container spacing={2}>
+              {question.answers.map((option, optionIndex) => (
+                <Grid item xs={6} key={optionIndex}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={userAnswers[index].answer.includes(
+                          option.text
+                        )}
+                        onChange={(e) => {
+                          const checked = e.target.checked;
+                          const updatedAnswers =
+                            userAnswers[index].answer.slice(); // Create a copy
+                          if (checked) {
+                            updatedAnswers.push(option.text);
+                          } else {
+                            const index = updatedAnswers.indexOf(option.text);
+                            if (index > -1) {
+                              updatedAnswers.splice(index, 1);
+                            }
+                          }
+                          handleAnswerChange(index, updatedAnswers);
+                        }}
+                      />
+                    }
+                    label={option.text}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+          )}
+        </div>
+      ))}
+      <Button variant="contained" onClick={handleSaveAnswers}>
+        Save Answers
+      </Button>
     </Container>
   );
 };
