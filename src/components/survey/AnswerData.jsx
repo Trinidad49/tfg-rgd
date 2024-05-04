@@ -19,15 +19,12 @@ export const AnswerData = ({ survey }) => {
         }
         const data = await response.json();
         setSurveyData(data);
-        console.log(surveyData);
-        console.log(survey);
       } catch (error) {
         console.error("Error fetching survey data:", error);
       }
     };
-
     fetchData();
-  }, []);
+  }, [survey._id]);
 
   if (!surveyData) {
     return <Typography>Loading... </Typography>;
@@ -36,7 +33,36 @@ export const AnswerData = ({ survey }) => {
   return (
     <div>
       <Typography variant="h4">{survey.title}</Typography>
-      {/* Render survey data */}
+      {survey.questions.map((question, index) => (
+        <div key={index}>
+          <Typography variant="h6">{question.text}</Typography>
+          {question.type === "text" ? (
+            <div>
+              {surveyData.map((answers, i) => (
+                <div key={i}>
+                  <Typography>{answers.answers[index].answer}</Typography>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div>
+              {question.answers.map((option, optionIndex) => (
+                <div key={optionIndex}>
+                  <Typography>{option.text}</Typography>
+                  <Typography>
+                    Count:{" "}
+                    {
+                      surveyData.filter(
+                        (a) => a.answers[index].answer === option.text
+                      ).length
+                    }
+                  </Typography>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
     </div>
   );
 };
