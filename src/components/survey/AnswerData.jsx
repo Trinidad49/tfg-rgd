@@ -1,8 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { Card, CardContent, LinearProgress, Typography } from "@mui/material";
+import {
+  Button,
+  Card,
+  CardContent,
+  LinearProgress,
+  Typography,
+} from "@mui/material";
+import { GenerateChart } from "./GenerateChart";
 
 export const AnswerData = ({ survey }) => {
   const [surveyData, setSurveyData] = useState(null);
+  const [showChart, setShowChart] = useState(
+    Array(survey.questions.length).fill(false)
+  );
+
+  const handleGenerateChart = (index) => {
+    setShowChart((prevShowChart) => {
+      const updatedShowChart = [...prevShowChart];
+      updatedShowChart[index] = !updatedShowChart[index];
+      return updatedShowChart;
+    });
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,7 +63,22 @@ export const AnswerData = ({ survey }) => {
       {survey.questions.map((question, index) => (
         <Card key={index} variant="outlined" style={{ marginBottom: "16px" }}>
           <CardContent>
-            <Typography variant="h6">{question.text}</Typography>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <Typography variant="h6">{question.text}</Typography>
+              <Button
+                variant={showChart[index] ? "contained" : "outlined"}
+                color="primary"
+                onClick={() => handleGenerateChart(index)}
+              >
+                {showChart[index] ? "Close Chart" : "Generate Chart"}
+              </Button>
+            </div>
             {question.type === "text" ? (
               <div style={{ maxHeight: "200px", overflowY: "auto" }}>
                 {surveyData.map((answers, i) => (
@@ -77,6 +110,7 @@ export const AnswerData = ({ survey }) => {
                 ))}
               </div>
             )}
+            {showChart[index] && <GenerateChart />}
           </CardContent>
         </Card>
       ))}
