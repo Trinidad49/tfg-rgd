@@ -9,6 +9,7 @@ import {
   DialogContent,
   DialogActions,
   Tooltip,
+  Snackbar,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import ShareIcon from "@mui/icons-material/Share";
@@ -21,6 +22,8 @@ export const SurveyList = () => {
   const [selectedSurvey, setSelectedSurvey] = useState(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [surveyToDelete, setSurveyToDelete] = useState(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const fetchSurveys = async () => {
     try {
@@ -57,12 +60,19 @@ export const SurveyList = () => {
 
   const handleShareSurvey = (id) => {
     const surveyLink = `${window.location.origin}/answer?survey=${id}`;
-    console.log(surveyLink);
-    //TODO
+    navigator.clipboard
+      .writeText(surveyLink)
+      .then(() => {
+        setSnackbarMessage("Survey link copied to clipboard");
+        setSnackbarOpen(true);
+      })
+      .catch((error) => {
+        console.error("Failed to copy survey link to clipboard:", error);
+      });
   };
 
   const handleDeleteSurvey = () => {
-    // Call the delete endpoint
+    // Delete the survey
     fetch("http://localhost:3080/surveys", {
       method: "DELETE",
       headers: {
@@ -72,7 +82,7 @@ export const SurveyList = () => {
     })
       .then((response) => {
         if (response.ok) {
-          fetchSurveys(); // Refresh surveys after delete
+          fetchSurveys();
         } else {
           console.error("Failed to delete survey");
         }
@@ -81,62 +91,76 @@ export const SurveyList = () => {
         console.error("Error deleting survey:", error);
       })
       .finally(() => {
-        setDeleteDialogOpen(false); // Close the delete confirmation dialog
+        setDeleteDialogOpen(false);
       });
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
   };
 
   return (
     <div>
-      <Grid container spacing={2}>
-        {surveys.map((survey) => (
-          <Grid item key={survey._id} xs={12} sm={6} md={4}>
-            <Card>
-              <CardContent>
-                <Typography variant="h5" component="h2">
-                  {survey.title}
-                </Typography>
-                <Tooltip title="Edit">
-                  <Button
-                    onClick={() => handleEditSurvey(survey)}
-                    startIcon={<EditIcon />}
-                  />
-                </Tooltip>
-                <Tooltip title="Share">
-                  <Button
-                    onClick={() => handleShareSurvey(survey._id)}
-                    startIcon={<ShareIcon />}
-                  />
-                </Tooltip>
-                <Tooltip title="Delete">
-                  <Button
-                    onClick={() => {
-                      setSurveyToDelete(survey);
-                      setDeleteDialogOpen(true);
-                    }}
-                    startIcon={<DeleteIcon />}
-                    style={{ color: "red" }}
-                  />
-                </Tooltip>
-              </CardContent>
-            </Card>
+      {!selectedSurvey && (
+        <div>
+          <Grid container spacing={2}>
+            {surveys.map((survey) => (
+              <Grid item key={survey._id} xs={12} sm={6} md={4}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="h5" component="h2">
+                      {survey.title}
+                    </Typography>
+                    <Tooltip title="Edit">
+                      <Button
+                        onClick={() => handleEditSurvey(survey)}
+                        startIcon={<EditIcon />}
+                      />
+                    </Tooltip>
+                    <Tooltip title="Copy survey link to clipboard">
+                      <Button
+                        onClick={() => handleShareSurvey(survey._id)}
+                        startIcon={<ShareIcon />}
+                      />
+                    </Tooltip>
+                    <Tooltip title="Delete">
+                      <Button
+                        onClick={() => {
+                          setSurveyToDelete(survey);
+                          setDeleteDialogOpen(true);
+                        }}
+                        startIcon={<DeleteIcon />}
+                        style={{ color: "red" }}
+                      />
+                    </Tooltip>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
           </Grid>
-        ))}
-      </Grid>
-      <Dialog
-        open={deleteDialogOpen}
-        onClose={() => setDeleteDialogOpen(false)}
-      >
-        <DialogTitle>Confirm Delete</DialogTitle>
-        <DialogContent>
-          <Typography variant="body1">
-            Are you sure you want to delete this survey?
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
-          <Button onClick={handleDeleteSurvey}>Delete</Button>
-        </DialogActions>
-      </Dialog>
+          <Dialog
+            open={deleteDialogOpen}
+            onClose={() => setDeleteDialogOpen(false)}
+          >
+            <DialogTitle>Confirm Delete</DialogTitle>
+            <DialogContent>
+              <Typography variant="body1">
+                Are you sure you want to delete this survey?
+              </Typography>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
+              <Button onClick={handleDeleteSurvey}>Delete</Button>
+            </DialogActions>
+          </Dialog>
+          <Snackbar
+            open={snackbarOpen}
+            autoHideDuration={6000}
+            onClose={handleSnackbarClose}
+            message={snackbarMessage}
+          />
+        </div>
+      )}
       {selectedSurvey && (
         <div>
           <SurveyMenu survey={selectedSurvey} handleExitEdit={handleExitEdit} />
