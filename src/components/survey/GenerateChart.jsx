@@ -4,10 +4,10 @@ import { Button } from "@mui/material";
 
 export const GenerateChart = (data) => {
   const [chartType, setChartType] = useState("bar");
-  const [countArray, setCountArray] = useState(
+  const [countArray] = useState(
     Array.isArray(data.data) ? data.data.map((a) => a.count) : []
   );
-  const [textArray, setTextArray] = useState(
+  const [textArray] = useState(
     Array.isArray(data.data) ? data.data.map((a) => a.text) : []
   );
 

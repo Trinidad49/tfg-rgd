@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { TextField, Button, IconButton } from "@mui/material";
+import { TextField, Button, IconButton, Snackbar } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import { Question } from "./Question";
 
@@ -7,6 +7,8 @@ export const SurveyForm = ({ survey }) => {
   const [title, setTitle] = useState("");
   const [questions, setQuestions] = useState([]);
   const [id, setId] = useState("");
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   useEffect(() => {
     if (survey) {
@@ -69,8 +71,16 @@ export const SurveyForm = ({ survey }) => {
       //Retrieve an ID from new survey
       if (id === "") {
         setId(data._id);
+        setSnackbarMessage("Survey Created");
+      } else {
+        setSnackbarMessage("Survey Updated");
       }
+      setSnackbarOpen(true);
     } catch (error) {}
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
   };
 
   return (
@@ -109,6 +119,12 @@ export const SurveyForm = ({ survey }) => {
       <Button variant="contained" onClick={handleAddQuestion}>
         Add Question
       </Button>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        message={snackbarMessage}
+      />
     </div>
   );
 };

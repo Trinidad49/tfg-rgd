@@ -58,7 +58,7 @@ export const RegisterForm = ({ onRegister }) => {
       return;
     }
 
-    if (!/^[\w-]+@([\w-])+[\w-]{2,4}$/.test(email)) {
+    if (!/^[\w-]+@([\w-])+.+[\w-]{2,4}$/.test(email)) {
       setEmailError("Please enter a valid email");
       return;
     }
@@ -104,6 +104,7 @@ export const RegisterForm = ({ onRegister }) => {
               <TextField
                 id="outlined-basic"
                 label="Contraseña"
+                type="password"
                 variant="outlined"
                 onChange={(e) => setPassword(e.target.value)}
                 value={password}
