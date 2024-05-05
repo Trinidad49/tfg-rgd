@@ -2,8 +2,14 @@ import React, { useState } from "react";
 import Plot from "react-plotly.js";
 import { Button } from "@mui/material";
 
-export const GenerateChart = () => {
-  const [chartType, setChartType] = useState("scatter");
+export const GenerateChart = (data) => {
+  const [chartType, setChartType] = useState("bar");
+  const [countArray, setCountArray] = useState(
+    Array.isArray(data.data) ? data.data.map((a) => a.count) : []
+  );
+  const [textArray, setTextArray] = useState(
+    Array.isArray(data.data) ? data.data.map((a) => a.text) : []
+  );
 
   const handleChartTypeChange = (type) => {
     setChartType(type);
@@ -16,8 +22,8 @@ export const GenerateChart = () => {
           <Plot
             data={[
               {
-                x: [1, 2, 3, 4, 5],
-                y: [1, 2, 3, 4, 5],
+                x: countArray,
+                y: textArray,
                 type: "bar",
                 orientation: "h",
                 marker: { color: "green" },
@@ -26,7 +32,7 @@ export const GenerateChart = () => {
             ]}
             layout={{
               title: "Horizontal Bar Chart",
-              xaxis: { title: "X Axis" },
+              xaxis: { title: "X Axis", tickmode: "linear" },
               yaxis: { title: "Y Axis" },
               hovermode: false,
             }}
@@ -37,8 +43,8 @@ export const GenerateChart = () => {
           <Plot
             data={[
               {
-                x: [1, 2, 3, 4, 5],
-                y: [1, 2, 3, 4, 5],
+                x: textArray,
+                y: countArray,
                 type: "bar",
                 marker: { color: "green" },
                 name: "Bar Chart",
@@ -47,7 +53,7 @@ export const GenerateChart = () => {
             layout={{
               title: "Bar Chart",
               xaxis: { title: "X Axis" },
-              yaxis: { title: "Y Axis" },
+              yaxis: { title: "Y Axis", tickmode: "linear" },
               hovermode: false,
             }}
           />
@@ -57,8 +63,8 @@ export const GenerateChart = () => {
           <Plot
             data={[
               {
-                values: [1, 2, 3, 4, 5],
-                labels: ["A", "B", "C", "D", "E"],
+                values: countArray,
+                labels: textArray,
                 type: "pie",
                 hole: 0.4,
                 name: "Donut Chart",

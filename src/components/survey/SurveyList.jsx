@@ -1,5 +1,6 @@
 import { Card, CardContent, Grid, Typography, Button } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
+import ShareIcon from "@mui/icons-material/Share";
 import React, { useState, useEffect } from "react";
 import { SurveyMenu } from "./SurveyMenu";
 
@@ -40,6 +41,12 @@ export const SurveyList = () => {
     fetchSurveys();
   };
 
+  const handleShareSurvey = (id) => {
+    const surveyLink = `${window.location.origin}/answer?survey=${id}`;
+    console.log(surveyLink);
+    //TODO
+  };
+
   return (
     <div>
       {!selectedSurvey && (
@@ -56,6 +63,12 @@ export const SurveyList = () => {
                     startIcon={<EditIcon />}
                   >
                     Edit
+                  </Button>
+                  <Button
+                    onClick={handleShareSurvey(survey._id)}
+                    startIcon={<ShareIcon />}
+                  >
+                    Share
                   </Button>
                 </CardContent>
               </Card>

@@ -57,6 +57,14 @@ export const AnswerData = ({ survey }) => {
           (a) => a.answers[questionIndex]?.answer === optionText
         ).length;
 
+  const getChartData = (index) => {
+    const data = [];
+    survey.questions[index].answers.map((a) =>
+      data.push({ text: a.text, count: getAnswerCount(a.text, index) })
+    );
+    return data;
+  };
+
   return (
     <div>
       <Typography variant="h4">{survey.title}</Typography>
@@ -110,7 +118,7 @@ export const AnswerData = ({ survey }) => {
                 ))}
               </div>
             )}
-            {showChart[index] && <GenerateChart />}
+            {showChart[index] && <GenerateChart data={getChartData(index)} />}
           </CardContent>
         </Card>
       ))}
