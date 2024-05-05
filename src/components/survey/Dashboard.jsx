@@ -11,7 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 
-export const Dashboard = () => {
+export const Dashboard = ({ onLogin }) => {
   const [selectedOption, setSelectedOption] = useState("Home");
 
   const handleOptionClick = (option) => {
@@ -28,10 +28,16 @@ export const Dashboard = () => {
                 <ListItem
                   key={option}
                   onClick={() => handleOptionClick(option)}
+                  style={{ cursor: "pointer" }}
                 >
                   <ListItemText primary={option} />
                 </ListItem>
               ))}
+            </List>
+            <List style={{ marginTop: "auto" }}>
+              <ListItem onClick={onLogin} style={{ cursor: "pointer" }}>
+                <ListItemText primary="Logout" />
+              </ListItem>
             </List>
           </Drawer>
         </Grid>

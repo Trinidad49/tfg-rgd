@@ -15,7 +15,7 @@ const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const handleLogin = (email, password) => {
-    setIsLoggedIn(true);
+    setIsLoggedIn(!isLoggedIn);
   };
 
   return (
@@ -27,7 +27,11 @@ const App = () => {
         <Route
           path="/"
           element={
-            isLoggedIn ? <Dashboard /> : <LoginForm onLogin={handleLogin} />
+            isLoggedIn ? (
+              <Dashboard onLogin={handleLogin} />
+            ) : (
+              <LoginForm onLogin={handleLogin} />
+            )
           }
         />
       </Routes>
