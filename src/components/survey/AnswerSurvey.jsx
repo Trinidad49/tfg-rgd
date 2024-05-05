@@ -32,7 +32,6 @@ export const AnswerSurvey = ({ surveyID }) => {
         if (data.length > 0) {
           setSurveyData(data[0]);
           // Initialize userAnswers state with empty answers for each question
-          console.log(data[0].questions);
           setUserAnswers(
             data[0].questions.map((question) => ({
               answer: question.type === "checkbox" ? [] : "",
@@ -55,7 +54,7 @@ export const AnswerSurvey = ({ surveyID }) => {
   };
 
   const handleSaveAnswers = async () => {
-    // Combine survey ID with user answers for submission
+    // Combine survey ID with user answers
     const surveyWithAnswers = {
       surveyID,
       questions: surveyData.questions.map((question, index) => ({
@@ -64,7 +63,7 @@ export const AnswerSurvey = ({ surveyID }) => {
       })),
     };
 
-    // Implement logic to save survey
+    // Save survey answer
     const response = await fetch("http://localhost:3080/answer", {
       method: "POST",
       headers: {
@@ -73,8 +72,9 @@ export const AnswerSurvey = ({ surveyID }) => {
       body: JSON.stringify(surveyWithAnswers),
     });
 
-    const data = await response.json();
-    console.log("Answers saved:", data);
+    await response.json();
+
+    //TODO: Once survey is saved, redirect to survey completed page
   };
 
   if (!surveyData) {

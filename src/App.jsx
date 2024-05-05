@@ -14,7 +14,7 @@ import { AnswerSurvey } from "./components/survey/AnswerSurvey";
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const handleLogin = (email, password) => {
+  const handleLogin = () => {
     setIsLoggedIn(!isLoggedIn);
   };
 
@@ -39,11 +39,9 @@ const App = () => {
   );
 };
 
-const AnswerSurveyPage = ({ location }) => {
+const AnswerSurveyPage = () => {
   const [searchParams] = useSearchParams();
   const surveyID = searchParams.get("survey");
-
-  console.log(surveyID);
 
   if (surveyID) {
     return <AnswerSurvey surveyID={surveyID} />;

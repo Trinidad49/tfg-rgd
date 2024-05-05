@@ -128,6 +128,3 @@ export const SurveyForm = ({ survey }) => {
     </div>
   );
 };
-
-//TODO
-//Add snackbar when saving and updating
