@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 
 export const Dashboard = ({ onLogin }) => {
-  const [selectedOption, setSelectedOption] = useState("Home");
+  const [selectedOption, setSelectedOption] = useState("Surveys");
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
@@ -24,7 +24,7 @@ export const Dashboard = ({ onLogin }) => {
         <Grid item xs={3}>
           <Drawer variant="permanent" anchor="left">
             <List>
-              {["Surveys", "New Survey"].map((option, index) => (
+              {["Surveys", "New Survey"].map((option) => (
                 <ListItem
                   key={option}
                   onClick={() => handleOptionClick(option)}

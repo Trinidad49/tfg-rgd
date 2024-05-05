@@ -1,12 +1,26 @@
-import { Card, CardContent, Grid, Typography, Button } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Grid,
+  Typography,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Tooltip,
+} from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import ShareIcon from "@mui/icons-material/Share";
+import DeleteIcon from "@mui/icons-material/Delete";
 import React, { useState, useEffect } from "react";
 import { SurveyMenu } from "./SurveyMenu";
 
 export const SurveyList = () => {
   const [surveys, setSurveys] = useState([]);
   const [selectedSurvey, setSelectedSurvey] = useState(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [surveyToDelete, setSurveyToDelete] = useState(null);
 
   const fetchSurveys = async () => {
     try {
@@ -47,35 +61,82 @@ export const SurveyList = () => {
     //TODO
   };
 
+  const handleDeleteSurvey = () => {
+    // Call the delete endpoint
+    fetch("http://localhost:3080/surveys", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ _id: surveyToDelete._id }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          fetchSurveys(); // Refresh surveys after delete
+        } else {
+          console.error("Failed to delete survey");
+        }
+      })
+      .catch((error) => {
+        console.error("Error deleting survey:", error);
+      })
+      .finally(() => {
+        setDeleteDialogOpen(false); // Close the delete confirmation dialog
+      });
+  };
+
   return (
     <div>
-      {!selectedSurvey && (
-        <Grid container spacing={2}>
-          {surveys.map((survey) => (
-            <Grid item key={survey._id} xs={12} sm={6} md={4}>
-              <Card>
-                <CardContent>
-                  <Typography variant="h5" component="h2">
-                    {survey.title}
-                  </Typography>
+      <Grid container spacing={2}>
+        {surveys.map((survey) => (
+          <Grid item key={survey._id} xs={12} sm={6} md={4}>
+            <Card>
+              <CardContent>
+                <Typography variant="h5" component="h2">
+                  {survey.title}
+                </Typography>
+                <Tooltip title="Edit">
                   <Button
                     onClick={() => handleEditSurvey(survey)}
                     startIcon={<EditIcon />}
-                  >
-                    Edit
-                  </Button>
+                  />
+                </Tooltip>
+                <Tooltip title="Share">
                   <Button
-                    onClick={handleShareSurvey(survey._id)}
+                    onClick={() => handleShareSurvey(survey._id)}
                     startIcon={<ShareIcon />}
-                  >
-                    Share
-                  </Button>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-      )}
+                  />
+                </Tooltip>
+                <Tooltip title="Delete">
+                  <Button
+                    onClick={() => {
+                      setSurveyToDelete(survey);
+                      setDeleteDialogOpen(true);
+                    }}
+                    startIcon={<DeleteIcon />}
+                    style={{ color: "red" }}
+                  />
+                </Tooltip>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+      >
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1">
+            Are you sure you want to delete this survey?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
+          <Button onClick={handleDeleteSurvey}>Delete</Button>
+        </DialogActions>
+      </Dialog>
       {selectedSurvey && (
         <div>
           <SurveyMenu survey={selectedSurvey} handleExitEdit={handleExitEdit} />
