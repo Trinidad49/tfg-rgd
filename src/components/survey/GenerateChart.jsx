@@ -1,14 +1,18 @@
 import React, { useState } from "react";
 import Plot from "react-plotly.js";
-import { Button } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 
-export const GenerateChart = (data) => {
+export const GenerateChart = ({ data, text }) => {
   const [chartType, setChartType] = useState("bar");
+  const [title, setTitle] = useState(text);
+  const [xAxisTitle, setXAxisTitle] = useState("X Axis");
+  const [yAxisTitle, setYAxisTitle] = useState("Y Axis");
+
   const [countArray] = useState(
-    Array.isArray(data.data) ? data.data.map((a) => a.count) : []
+    Array.isArray(data) ? data.map((a) => a.count) : []
   );
   const [textArray] = useState(
-    Array.isArray(data.data) ? data.data.map((a) => a.text) : []
+    Array.isArray(data) ? data.map((a) => a.text) : []
   );
 
   const handleChartTypeChange = (type) => {
@@ -31,9 +35,9 @@ export const GenerateChart = (data) => {
               },
             ]}
             layout={{
-              title: "Horizontal Bar Chart",
-              xaxis: { title: "X Axis", tickmode: "linear" },
-              yaxis: { title: "Y Axis" },
+              title: title,
+              xaxis: { title: xAxisTitle, tickmode: "linear" },
+              yaxis: { title: yAxisTitle },
               hovermode: false,
             }}
           />
@@ -51,9 +55,9 @@ export const GenerateChart = (data) => {
               },
             ]}
             layout={{
-              title: "Bar Chart",
-              xaxis: { title: "X Axis" },
-              yaxis: { title: "Y Axis", tickmode: "linear" },
+              title: title,
+              xaxis: { title: xAxisTitle },
+              yaxis: { title: yAxisTitle, tickmode: "linear" },
               hovermode: false,
             }}
           />
@@ -71,7 +75,7 @@ export const GenerateChart = (data) => {
               },
             ]}
             layout={{
-              title: "Donut Chart",
+              title: title,
               hovermode: false,
             }}
           />
@@ -102,6 +106,28 @@ export const GenerateChart = (data) => {
         >
           Donut
         </Button>
+      </div>
+      <div>
+        <TextField
+          label="Chart Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+        {chartType !== "donut" && (
+          <>
+            <TextField
+              label="X Axis Title"
+              value={xAxisTitle}
+              onChange={(e) => setXAxisTitle(e.target.value)}
+              style={{ marginRight: "10px" }}
+            />
+            <TextField
+              label="Y Axis Title"
+              value={yAxisTitle}
+              onChange={(e) => setYAxisTitle(e.target.value)}
+            />
+          </>
+        )}
       </div>
       {renderChart()}
     </div>

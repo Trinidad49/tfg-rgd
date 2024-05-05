@@ -118,7 +118,12 @@ export const AnswerData = ({ survey }) => {
                 ))}
               </div>
             )}
-            {showChart[index] && <GenerateChart data={getChartData(index)} />}
+            {showChart[index] && (
+              <GenerateChart
+                data={getChartData(index)}
+                text={survey.questions[index].text}
+              />
+            )}
           </CardContent>
         </Card>
       ))}
