@@ -16,6 +16,7 @@ import ShareIcon from "@mui/icons-material/Share";
 import DeleteIcon from "@mui/icons-material/Delete";
 import React, { useState, useEffect } from "react";
 import { SurveyMenu } from "./SurveyMenu";
+import { ImportCSV } from "../csv/ImportCSV";
 
 export const SurveyList = () => {
   const [surveys, setSurveys] = useState([]);
@@ -101,6 +102,7 @@ export const SurveyList = () => {
 
   return (
     <div>
+      <ImportCSV />
       {!selectedSurvey && (
         <div>
           <Grid container spacing={2}>

@@ -23,7 +23,6 @@ export const GenerateCSV = ({ survey, surveyData }) => {
 
   const handleDownloadCSV = () => {
     const csvContent = formatCSV(questions, answers);
-    console.log(questions);
 
     const blob = new Blob([csvContent], { type: "text/csv" });
 

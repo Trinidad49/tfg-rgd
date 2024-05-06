@@ -31,7 +31,6 @@ export const RegisterForm = ({ onRegister }) => {
       if (response.ok) {
         // Registration successful
         navigate("/");
-        //onRegister();
         return { success: true };
       } else {
         // Registration failed, handle error message
@@ -72,7 +71,6 @@ export const RegisterForm = ({ onRegister }) => {
       setPasswordError("The password must be 8 characters or longer");
       return;
     }
-    //Añadir logica
     register(email, password);
   };
 
