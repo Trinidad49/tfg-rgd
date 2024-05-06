@@ -7,12 +7,14 @@ import {
   Typography,
 } from "@mui/material";
 import { GenerateChart } from "./GenerateChart";
+import { GenerateCSV } from "../csv/GenerateCSV";
 
 export const AnswerData = ({ survey }) => {
   const [surveyData, setSurveyData] = useState(null);
   const [showChart, setShowChart] = useState(
     Array(survey.questions.length).fill(false)
   );
+  console.log(surveyData);
 
   const handleGenerateChart = (index) => {
     setShowChart((prevShowChart) => {
@@ -68,6 +70,7 @@ export const AnswerData = ({ survey }) => {
   return (
     <div>
       <Typography variant="h4">{survey.title}</Typography>
+      <GenerateCSV title={survey.title} surveyData={surveyData} />
       {survey.questions.map((question, index) => (
         <Card key={index} variant="outlined" style={{ marginBottom: "16px" }}>
           <CardContent>
