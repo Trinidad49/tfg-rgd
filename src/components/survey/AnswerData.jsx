@@ -70,7 +70,7 @@ export const AnswerData = ({ survey }) => {
   return (
     <div>
       <Typography variant="h4">{survey.title}</Typography>
-      <GenerateCSV title={survey.title} surveyData={surveyData} />
+      <GenerateCSV survey={survey} surveyData={surveyData} />
       {survey.questions.map((question, index) => (
         <Card key={index} variant="outlined" style={{ marginBottom: "16px" }}>
           <CardContent>

@@ -1,7 +1,7 @@
 import React from "react";
 
-export const GenerateCSV = ({ title, surveyData }) => {
-  const questions = surveyData[0]?.answers.map((a) => a.text);
+export const GenerateCSV = ({ survey, surveyData }) => {
+  const questions = survey.questions.map((a) => a.text);
   const answers = [];
   surveyData.map((data, index) =>
     answers.push(
@@ -23,6 +23,7 @@ export const GenerateCSV = ({ title, surveyData }) => {
 
   const handleDownloadCSV = () => {
     const csvContent = formatCSV(questions, answers);
+    console.log(questions);
 
     const blob = new Blob([csvContent], { type: "text/csv" });
 
@@ -30,7 +31,7 @@ export const GenerateCSV = ({ title, surveyData }) => {
 
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", `${title}(answers).csv`);
+    link.setAttribute("download", `${survey.title}(answers).csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
