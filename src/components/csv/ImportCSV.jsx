@@ -2,9 +2,11 @@ import React, { useState } from "react";
 
 export const ImportCSV = ({ onImport }) => {
   const [csvData, setCSVData] = useState(null);
+  const [fileName, setFileName] = useState("");
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
+    setFileName(file.name);
     const reader = new FileReader();
 
     reader.onload = (e) => {
@@ -37,7 +39,7 @@ export const ImportCSV = ({ onImport }) => {
       }
     });
     if (diferentAnswers.length < 6) {
-      if (isCheckBox) return { type: "checkBox", answers: diferentAnswers };
+      if (isCheckBox) return { type: "checkbox", answers: diferentAnswers };
       return { type: "multipleChoice", answers: diferentAnswers };
     }
     return { type: "text", answers: [] };
@@ -66,7 +68,7 @@ export const ImportCSV = ({ onImport }) => {
 
     const newSurvey = {
       userID: localStorage.getItem("userID"),
-      title: "NombreArchivo+Import",
+      title: `${fileName.slice(0, -4)}_Import`,
       questions: questions.map((q, i) => ({
         text: q.text,
         type: getQuestionType(i, answers, questions).type,
@@ -77,12 +79,35 @@ export const ImportCSV = ({ onImport }) => {
     return { answers: answers, survey: newSurvey };
   };
 
-  const handleImport = () => {
+  const handleImport = async () => {
     const { answers, survey } = formatCSVData(csvData);
 
     //Post survey and get id
+    const response = await fetch("http://localhost:3080/surveys", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(survey),
+    });
+
+    const data = await response.json();
 
     //Post answers with id
+    answers.forEach(async (a) => {
+      const surveyWithAnswers = {
+        surveyID: data._id,
+        questions: a,
+      };
+
+      await fetch("http://localhost:3080/answer", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(surveyWithAnswers),
+      });
+    });
     //onImport(csvData);
   };
 
