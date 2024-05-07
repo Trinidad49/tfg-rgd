@@ -79,6 +79,7 @@ export const ImportCSV = ({ onImport }) => {
 
   const handleImport = () => {
     const { answers, survey } = formatCSVData(csvData);
+
     //Post survey and get id
 
     //Post answers with id
