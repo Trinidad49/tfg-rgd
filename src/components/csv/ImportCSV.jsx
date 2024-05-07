@@ -15,13 +15,39 @@ export const ImportCSV = ({ onImport }) => {
     reader.readAsText(file);
   };
 
+  const getQuestionType = (i, answers, questions) => {
+    const diferentAnswers = [];
+    let isCheckBox = false;
+
+    answers.forEach((a) => {
+      if (a[i]?.text === questions[i].text && a[i]?.answer !== "") {
+        if (!diferentAnswers.includes(a[i].answer)) {
+          if (a[i].answer.includes(",")) {
+            isCheckBox = true;
+            const checkboxanswers = a[i].answer.split(",");
+            checkboxanswers.forEach((c) => {
+              if (!diferentAnswers.includes(c)) {
+                diferentAnswers.push(c);
+              }
+            });
+          } else {
+            diferentAnswers.push(a[i].answer);
+          }
+        }
+      }
+    });
+    if (diferentAnswers.length < 6) {
+      if (isCheckBox) return { type: "checkBox", answers: diferentAnswers };
+      return { type: "multipleChoice", answers: diferentAnswers };
+    }
+    return { type: "text", answers: [] };
+  };
+
   const formatCSVData = (csvData) => {
     const rows = csvData.split("\n");
     const questions = rows[0]
       .split(",")
       .map((question) => ({ text: question.trim() }));
-
-    console.log(rows[5]);
 
     const answers = [];
     for (let i = 1; i < rows.length; i++) {
@@ -38,11 +64,24 @@ export const ImportCSV = ({ onImport }) => {
       answers.push(userAnswers);
     }
 
-    return answers;
+    const newSurvey = {
+      userID: localStorage.getItem("userID"),
+      title: "NombreArchivo+Import",
+      questions: questions.map((q, i) => ({
+        text: q.text,
+        type: getQuestionType(i, answers, questions).type,
+        answers: getQuestionType(i, answers, questions).answers,
+      })),
+    };
+
+    return { answers: answers, survey: newSurvey };
   };
 
   const handleImport = () => {
-    formatCSVData(csvData);
+    const { answers, survey } = formatCSVData(csvData);
+    //Post survey and get id
+
+    //Post answers with id
     //onImport(csvData);
   };
 
