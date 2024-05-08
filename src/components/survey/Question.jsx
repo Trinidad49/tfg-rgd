@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   TextField,
   MenuItem,
@@ -14,17 +14,40 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import CloseIcon from "@mui/icons-material/Close";
 
 export const Question = ({ index, question, onUpdate, onRemove }) => {
+  const initialLinearValues =
+    question?.type === "linear"
+      ? [
+          parseInt(question.answers[0].text),
+          parseInt(question.answers[question.answers.length - 1].text),
+        ]
+      : [0, 5];
+  const [linearValues, setLinearValues] = useState(initialLinearValues);
+
   const handleUpdateText = (text) => {
     onUpdate(index, { ...question, text });
   };
 
   const handleUpdateType = (type) => {
-    onUpdate(index, { ...question, type });
+    if (type === "linear") {
+      setLinearValues([0, 5]);
+      onUpdate(index, { ...question, type, answers: generateRangeArray(0, 5) });
+    } else {
+      onUpdate(index, { ...question, type });
+    }
   };
 
   const handleUpdateRange = (start, end) => {
-    onUpdate(index, { ...question, range: [start, end] });
+    setLinearValues([start, end]);
+    onUpdate(index, { ...question, answers: generateRangeArray(start, end) });
   };
+
+  function generateRangeArray(start, end) {
+    const numbers = [];
+    for (let i = start; i <= end; i++) {
+      numbers.push(i.toString());
+    }
+    return numbers;
+  }
 
   const handleAddAnswer = () => {
     onUpdate(index, {
@@ -97,11 +120,11 @@ export const Question = ({ index, question, onUpdate, onRemove }) => {
                 <span style={{ margin: "0 8px" }}>From</span>
                 <FormControl fullWidth>
                   <Select
-                    value={question.range ? question.range[0] : 0}
+                    value={linearValues[0]}
                     onChange={(e) =>
                       handleUpdateRange(
                         parseInt(e.target.value),
-                        question.range ? question.range[1] : 10
+                        linearValues[1]
                       )
                     }
                   >
@@ -115,10 +138,10 @@ export const Question = ({ index, question, onUpdate, onRemove }) => {
                 <span style={{ margin: "0 8px" }}>to</span>
                 <FormControl fullWidth>
                   <Select
-                    value={question.range ? question.range[1] : 5}
+                    value={linearValues[1]}
                     onChange={(e) =>
                       handleUpdateRange(
-                        question.range ? question.range[0] : 0,
+                        linearValues[0],
                         parseInt(e.target.value)
                       )
                     }
