@@ -38,6 +38,31 @@ export const ImportCSV = ({ onImport }) => {
         }
       }
     });
+    if (diferentAnswers.length < 10 && !isCheckBox) {
+      const sortedAnswers = [];
+      let isLinear = true;
+      for (let i = 0; i < diferentAnswers.length; i++) {
+        const num = parseInt(diferentAnswers[i]);
+        if (
+          !isNaN(num) &&
+          num >= 0 &&
+          num <= 10 &&
+          !sortedAnswers.includes(num)
+        ) {
+          sortedAnswers.push(num);
+        } else {
+          isLinear = false;
+        }
+      }
+      if (isLinear) {
+        const maxNumber = Math.max(...sortedAnswers);
+        const linearArray = [];
+        for (let i = 0; i <= maxNumber; i++) {
+          linearArray.push(i.toString());
+        }
+        return { type: "linear", answers: linearArray };
+      }
+    }
     if (diferentAnswers.length < 6) {
       if (isCheckBox) return { type: "checkbox", answers: diferentAnswers };
       return { type: "multipleChoice", answers: diferentAnswers };
