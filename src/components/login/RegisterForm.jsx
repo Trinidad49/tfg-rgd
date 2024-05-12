@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Divider,
   Paper,
   Stack,
   TextField,
@@ -84,26 +85,26 @@ export const RegisterForm = ({ onRegister }) => {
       }}
     >
       <Paper elevation={3}>
-        <Box p={3} minWidth={400}>
+        <Box p={4} minWidth={400}>
           <form onSubmit={handleRegister}>
             <Stack spacing={2}>
-              <Typography align="center" component="h1" variant="h5">
+              <Typography align="center" component="h1" variant="h4">
                 Register
               </Typography>
               <TextField
-                id="outlined-basic"
+                id="standard-basic"
                 label="Email"
-                variant="outlined"
+                variant="standard"
                 onChange={(e) => setEmail(e.target.value)}
                 value={email}
                 error={emailError !== ""}
                 helperText={emailError}
               />
               <TextField
-                id="outlined-basic"
+                id="standard-basic"
                 label="Contraseña"
                 type="password"
-                variant="outlined"
+                variant="standard"
                 onChange={(e) => setPassword(e.target.value)}
                 value={password}
                 error={passwordError !== ""}
@@ -113,14 +114,26 @@ export const RegisterForm = ({ onRegister }) => {
             <Button
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              size="large"
+              sx={{ mt: 3, mb: 5 }}
               onClick={handleRegister}
             >
               Register
             </Button>
-            <Button variant="text">
-              <Link to="/">Volver</Link>
-            </Button>
+            <Divider variant="middle" />
+            <Typography color={"gray"} mt={2} style={{ textAlign: "center" }}>
+              ¿Ya tienes una cuenta?{" "}
+              <Link
+                style={{
+                  textDecoration: "none",
+                  color: "#1976d2",
+                  fontWeight: "bold",
+                }}
+                to="/"
+              >
+                LogIn
+              </Link>
+            </Typography>
           </form>
         </Box>
       </Paper>

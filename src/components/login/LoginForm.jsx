@@ -7,6 +7,7 @@ import {
   Box,
   Typography,
   Stack,
+  Divider,
 } from "@mui/material";
 
 export const LoginForm = ({ onLogin }) => {
@@ -75,26 +76,26 @@ export const LoginForm = ({ onLogin }) => {
       }}
     >
       <Paper elevation={3}>
-        <Box p={3} minWidth={400}>
+        <Box p={4} minWidth={400}>
           <form onSubmit={handleLogin}>
             <Stack spacing={2}>
-              <Typography align="center" component="h1" variant="h5">
+              <Typography align="center" component="h1" variant="h4">
                 LogIn
               </Typography>
               <TextField
-                id="outlined-basic"
+                id="standard-basic"
                 label="Email"
-                variant="outlined"
+                variant="standard"
                 onChange={(e) => setEmail(e.target.value)}
                 value={email}
                 error={emailError !== ""}
                 helperText={emailError}
               />
               <TextField
-                id="outlined-basic"
+                id="standard-basic"
                 label="Contraseña"
                 type="password"
-                variant="outlined"
+                variant="standard"
                 onChange={(e) => setPassword(e.target.value)}
                 value={password}
                 error={passwordError !== ""}
@@ -104,14 +105,26 @@ export const LoginForm = ({ onLogin }) => {
             <Button
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              size="large"
+              sx={{ mt: 3, mb: 5 }}
               onClick={handleLogin}
             >
               LogIn
             </Button>
-            <p style={{ textAlign: "end" }}>
-              ¿No tienes cuenta? <Link to="/register">Registrate</Link>
-            </p>
+            <Divider variant="middle" />
+            <Typography color={"gray"} mt={2} style={{ textAlign: "center" }}>
+              ¿No tienes cuenta?{" "}
+              <Link
+                style={{
+                  textDecoration: "none",
+                  color: "#1976d2",
+                  fontWeight: "bold",
+                }}
+                to="/register"
+              >
+                Registrate aquí
+              </Link>
+            </Typography>
           </form>
         </Box>
       </Paper>
