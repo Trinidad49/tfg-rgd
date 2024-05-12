@@ -114,6 +114,22 @@ export const AnswerSurvey = ({ surveyID }) => {
                 ))}
               </Grid>
             </RadioGroup>
+          ) : question.type === "linear" ? (
+            <RadioGroup
+              aria-label="quiz"
+              name="quiz"
+              value={userAnswers[index].answer}
+              onChange={(e) => handleAnswerChange(index, e.target.value)}
+            >
+              <Grid container spacing={1}>
+                {question.answers.map((option, optionIndex) => (
+                  <Grid item xs={1} key={optionIndex}>
+                    <Typography align="center">{option.text}</Typography>
+                    <FormControlLabel value={option.text} control={<Radio />} />
+                  </Grid>
+                ))}
+              </Grid>
+            </RadioGroup>
           ) : (
             <Grid container spacing={2}>
               {question.answers.map((option, optionIndex) => (
