@@ -14,6 +14,7 @@ import {
 export const AnswerSurvey = ({ surveyID }) => {
   const [surveyData, setSurveyData] = useState(null);
   const [userAnswers, setUserAnswers] = useState([]);
+  const [answerCheck, setAnswerCheck] = useState([]);
 
   useEffect(() => {
     const fetchSurveys = async () => {
@@ -36,6 +37,9 @@ export const AnswerSurvey = ({ surveyID }) => {
             data[0].questions.map((question) => ({
               answer: question.type === "checkbox" ? [] : "",
             }))
+          );
+          setAnswerCheck(
+            Array.from({ length: data[0].questions.length }, () => false)
           );
         }
       } catch (error) {
@@ -63,17 +67,28 @@ export const AnswerSurvey = ({ surveyID }) => {
       })),
     };
 
-    // Save survey answer
-    const response = await fetch("http://localhost:3080/answer", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(surveyWithAnswers),
+    //Check if mandatory questions have been answered
+    const updatedAnswerCheck = userAnswers.map((userAnswer, index) => {
+      const isMandatory = surveyData.questions[index].mandatory;
+      const isEmpty =
+        userAnswer.answer.length === 0 ||
+        (Array.isArray(userAnswer.answer) && userAnswer.answer.length === 0);
+      return isMandatory && isEmpty;
     });
+    setAnswerCheck(updatedAnswerCheck);
 
-    await response.json();
+    if (!updatedAnswerCheck.includes(true)) {
+      // Save survey answer
+      const response = await fetch("http://localhost:3080/answer", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(surveyWithAnswers),
+      });
 
+      await response.json();
+    }
     //TODO: Once survey is saved, redirect to survey completed page
   };
 
@@ -86,7 +101,16 @@ export const AnswerSurvey = ({ surveyID }) => {
       <Typography variant="h3">{surveyData.title}</Typography>
       {surveyData.questions.map((question, index) => (
         <div key={index}>
-          <Typography variant="h5">{question.text}</Typography>
+          <Typography variant="h5">
+            {question.text}
+            {question.mandatory && <span style={{ color: "red" }}> *</span>}
+            {answerCheck[index] && (
+              <span style={{ color: "red" }}>
+                {" "}
+                You must answer this question
+              </span>
+            )}
+          </Typography>
           {question.type === "text" ? (
             <TextField
               label="Your Answer"
