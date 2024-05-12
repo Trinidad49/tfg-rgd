@@ -1,5 +1,5 @@
 import React from "react";
-import { AppBar, Tabs, Tab, Button, Toolbar } from "@mui/material";
+import { AppBar, Tabs, Tab, Button } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { SurveyForm } from "./SurveyForm";
 import { AnswerData } from "./AnswerData";
@@ -17,13 +17,15 @@ export const SurveyMenu = ({ survey, handleExitEdit }) => {
         <Tabs value={selectedTab} onChange={handleTabChange}>
           <Tab value="edit" label="Edit" />
           <Tab value="answers" label="Answers" />
-        </Tabs>
-        <Toolbar>
           <div style={{ flexGrow: 1 }} />
-          <Button onClick={handleExitEdit} startIcon={<CloseIcon />}>
+          <Button
+            style={{ marginRight: 20 }}
+            onClick={handleExitEdit}
+            startIcon={<CloseIcon />}
+          >
             Exit
           </Button>
-        </Toolbar>
+        </Tabs>
       </AppBar>
       <div role="tabpanel" hidden={selectedTab !== "edit"}>
         {selectedTab === "edit" && <SurveyForm survey={survey} />}

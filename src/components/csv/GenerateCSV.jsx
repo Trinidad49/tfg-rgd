@@ -1,3 +1,4 @@
+import { Button } from "@mui/material";
 import React from "react";
 
 export const GenerateCSV = ({ survey, surveyData }) => {
@@ -39,7 +40,7 @@ export const GenerateCSV = ({ survey, surveyData }) => {
 
   return (
     <div>
-      <button onClick={handleDownloadCSV}>Download CSV</button>
+      <Button onClick={handleDownloadCSV}>Download CSV</Button>
     </div>
   );
 };
