@@ -8,6 +8,7 @@ import {
   FormControl,
   InputLabel,
   Select,
+  Switch,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -75,6 +76,10 @@ export const Question = ({ index, question, onUpdate, onRemove }) => {
     });
   };
 
+  const handleUpdateMandatory = () => {
+    onUpdate(index, { ...question, mandatory: !question.mandatory });
+  };
+
   return (
     <Card variant="outlined" style={{ marginBottom: "16px" }}>
       <CardContent>
@@ -106,6 +111,17 @@ export const Question = ({ index, question, onUpdate, onRemove }) => {
           >
             <DeleteIcon />
           </IconButton>
+        </div>
+        <div
+          style={{ display: "flex", alignItems: "center", marginBottom: "8px" }}
+        >
+          <span>Mandatory:</span>
+          <Switch
+            checked={question.mandatory}
+            onChange={() => handleUpdateMandatory()}
+            color="primary"
+            inputProps={{ "aria-label": "mandatory toggle" }}
+          />
         </div>
         {question.type !== "text" && (
           <div>

@@ -96,6 +96,7 @@ export const ImportCSV = ({ onImport }) => {
       title: `${fileName.slice(0, -4)}_Import`,
       questions: questions.map((q, i) => ({
         text: q.text,
+        mandatory: false,
         type: getQuestionType(i, answers, questions).type,
         answers: getQuestionType(i, answers, questions).answers,
       })),

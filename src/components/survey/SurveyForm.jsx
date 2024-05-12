@@ -22,6 +22,7 @@ export const SurveyForm = ({ survey }) => {
     const newQuestion = {
       text: "",
       type: "text",
+      mandatory: false,
       answers: [],
     };
     setQuestions([...questions, newQuestion]);
@@ -31,6 +32,7 @@ export const SurveyForm = ({ survey }) => {
     const updatedQuestions = [...questions];
     updatedQuestions[index] = updatedQuestion;
     setQuestions(updatedQuestions);
+    console.log(updatedQuestion);
   };
 
   const handleRemoveQuestion = (index) => {
