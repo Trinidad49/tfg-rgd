@@ -9,9 +9,10 @@ import {
   InputLabel,
   Select,
   Switch,
+  Grid,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 
 export const Question = ({ index, question, onUpdate, onRemove }) => {
@@ -83,58 +84,48 @@ export const Question = ({ index, question, onUpdate, onRemove }) => {
   return (
     <Card variant="outlined" style={{ marginBottom: "16px" }}>
       <CardContent>
-        <div
-          style={{ display: "flex", alignItems: "center", marginBottom: "8px" }}
-        >
-          <TextField
-            label="Question Text"
-            value={question.text}
-            onChange={(e) => handleUpdateText(e.target.value)}
-            fullWidth
-            margin="normal"
-          />
-          <FormControl style={{ marginLeft: "8px" }}>
-            <InputLabel>Type</InputLabel>
-            <Select
-              value={question.type}
-              onChange={(e) => handleUpdateType(e.target.value)}
+        <Grid container style={{ marginBottom: 15 }}>
+          <Grid xs={9}>
+            <TextField
+              placeholder="Question Text"
+              value={question.text}
+              onChange={(e) => handleUpdateText(e.target.value)}
+              fullWidth
+              variant="standard"
+              margin="normal"
+            />
+          </Grid>
+          <Grid xs={3}>
+            <FormControl
+              variant="standard"
+              style={{ marginLeft: 50, minWidth: 150 }}
             >
-              <MenuItem value="text">Text</MenuItem>
-              <MenuItem value="multipleChoice">Multiple Choice</MenuItem>
-              <MenuItem value="checkbox">Checkbox</MenuItem>
-              <MenuItem value="linear">Linear Scale</MenuItem>
-            </Select>
-          </FormControl>
-          <IconButton
-            onClick={() => onRemove(index)}
-            style={{ marginLeft: "8px" }}
-          >
-            <DeleteIcon />
-          </IconButton>
-        </div>
-        <div
-          style={{ display: "flex", alignItems: "center", marginBottom: "8px" }}
-        >
-          <span>Mandatory:</span>
-          <Switch
-            checked={question.mandatory}
-            onChange={() => handleUpdateMandatory()}
-            color="primary"
-            inputProps={{ "aria-label": "mandatory toggle" }}
-          />
-        </div>
-        {question.type !== "text" && (
-          <div>
-            {question.type === "linear" ? (
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginBottom: "8px",
-                }}
+              <InputLabel>Type</InputLabel>
+              <Select
+                value={question.type}
+                onChange={(e) => handleUpdateType(e.target.value)}
               >
+                <MenuItem value="text">Text</MenuItem>
+                <MenuItem value="multipleChoice">Multiple Choice</MenuItem>
+                <MenuItem value="checkbox">Checkbox</MenuItem>
+                <MenuItem value="linear">Linear Scale</MenuItem>
+              </Select>
+            </FormControl>
+
+            <IconButton
+              onClick={() => onRemove(index)}
+              style={{ marginLeft: "10px" }}
+            >
+              <DeleteIcon />
+            </IconButton>
+          </Grid>
+        </Grid>
+        {question.type !== "text" && (
+          <>
+            {question.type === "linear" ? (
+              <div style={{ display: "flex", alignItems: "center" }}>
                 <span style={{ margin: "0 8px" }}>From</span>
-                <FormControl fullWidth>
+                <FormControl style={{ marginRight: "8px" }}>
                   <Select
                     value={linearValues[0]}
                     onChange={(e) =>
@@ -143,6 +134,7 @@ export const Question = ({ index, question, onUpdate, onRemove }) => {
                         linearValues[1]
                       )
                     }
+                    style={{ maxWidth: 70 }}
                   >
                     {[0, 1].map((value) => (
                       <MenuItem key={value} value={value}>
@@ -152,7 +144,7 @@ export const Question = ({ index, question, onUpdate, onRemove }) => {
                   </Select>
                 </FormControl>
                 <span style={{ margin: "0 8px" }}>to</span>
-                <FormControl fullWidth>
+                <FormControl>
                   <Select
                     value={linearValues[1]}
                     onChange={(e) =>
@@ -161,6 +153,7 @@ export const Question = ({ index, question, onUpdate, onRemove }) => {
                         parseInt(e.target.value)
                       )
                     }
+                    style={{ maxWidth: 70 }}
                   >
                     {[...Array(9).keys()].map((value) => (
                       <MenuItem key={value + 2} value={value + 2}>
@@ -176,32 +169,57 @@ export const Question = ({ index, question, onUpdate, onRemove }) => {
                   key={answerIndex}
                   style={{
                     display: "flex",
-                    alignItems: "center",
-                    marginBottom: "8px",
+                    marginBottom: 2,
+                    marginLeft: 20,
+                    marginRight: 100,
                   }}
                 >
                   <TextField
-                    label="Answer"
+                    placeholder="Answer"
                     value={answer.text}
                     onChange={(e) =>
                       handleUpdateAnswer(answerIndex, e.target.value)
                     }
                     fullWidth
-                    margin="normal"
+                    multiline
+                    size="Small"
+                    variant="standard"
                   />
-                  <IconButton onClick={() => handleRemoveAnswer(answerIndex)}>
+                  <IconButton
+                    style={{ marginLeft: 10, marginRight: 10 }}
+                    onClick={() => handleRemoveAnswer(answerIndex)}
+                  >
                     <CloseIcon />
                   </IconButton>
                 </div>
               ))
             )}
             {question.type !== "linear" && (
-              <IconButton onClick={handleAddAnswer}>
-                <AddCircleOutlineIcon />
+              <IconButton
+                style={{ marginLeft: 20, marginBottom: -20 }}
+                onClick={handleAddAnswer}
+              >
+                <AddIcon />
               </IconButton>
             )}
-          </div>
+          </>
         )}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            alignItems: "center",
+            marginBottom: "8px",
+          }}
+        >
+          <span>Mandatory:</span>
+          <Switch
+            checked={question.mandatory}
+            onChange={() => handleUpdateMandatory()}
+            color="primary"
+            inputProps={{ "aria-label": "mandatory toggle" }}
+          />
+        </div>
       </CardContent>
     </Card>
   );

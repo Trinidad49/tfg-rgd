@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { TextField, Button, IconButton, Snackbar } from "@mui/material";
+import {
+  TextField,
+  Button,
+  IconButton,
+  Snackbar,
+  Paper,
+  Divider,
+} from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import { Question } from "./Question";
 
@@ -86,7 +93,7 @@ export const SurveyForm = ({ survey }) => {
   };
 
   return (
-    <div>
+    <Paper style={{ backgroundColor: "white", margin: 10, padding: 30 }}>
       <div
         style={{
           display: "flex",
@@ -109,6 +116,7 @@ export const SurveyForm = ({ survey }) => {
           <SaveIcon />
         </IconButton>
       </div>
+      <Divider style={{ marginBottom: 20, marginTop: 10 }} />
       {questions.map((question, index) => (
         <Question
           key={index}
@@ -127,6 +135,6 @@ export const SurveyForm = ({ survey }) => {
         onClose={handleCloseSnackbar}
         message={snackbarMessage}
       />
-    </div>
+    </Paper>
   );
 };

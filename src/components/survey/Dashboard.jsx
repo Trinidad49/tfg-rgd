@@ -54,7 +54,7 @@ export const Dashboard = ({ onLogin }) => {
         </List>
       </Drawer>
       <Grid container>
-        <Grid item xs={13} marginTop={10}>
+        <Grid item xs={13}>
           {selectedOption === "Surveys" && <SurveyList />}
           {selectedOption === "New Survey" && <SurveyForm />}
         </Grid>
