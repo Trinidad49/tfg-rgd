@@ -16,7 +16,6 @@ import ShareIcon from "@mui/icons-material/Share";
 import DeleteIcon from "@mui/icons-material/Delete";
 import React, { useState, useEffect } from "react";
 import { SurveyMenu } from "./SurveyMenu";
-import { ImportCSV } from "../csv/ImportCSV";
 
 export const SurveyList = () => {
   const [surveys, setSurveys] = useState([]);
@@ -102,39 +101,41 @@ export const SurveyList = () => {
 
   return (
     <div>
-      <ImportCSV />
       {!selectedSurvey && (
         <div>
           <Grid container spacing={2}>
             {surveys.map((survey) => (
-              <Grid item key={survey._id} xs={12} sm={6} md={4}>
-                <Card>
+              <Grid item key={survey._id} xs={12} md={4}>
+                <Card style={{ minHeight: 150 }}>
                   <CardContent>
-                    <Typography variant="h5" component="h2">
+                    <Typography height={100} variant="h6">
                       {survey.title}
                     </Typography>
-                    <Tooltip title="Edit">
-                      <Button
-                        onClick={() => handleEditSurvey(survey)}
-                        startIcon={<EditIcon />}
-                      />
-                    </Tooltip>
-                    <Tooltip title="Copy survey link to clipboard">
-                      <Button
-                        onClick={() => handleShareSurvey(survey._id)}
-                        startIcon={<ShareIcon />}
-                      />
-                    </Tooltip>
-                    <Tooltip title="Delete">
-                      <Button
-                        onClick={() => {
-                          setSurveyToDelete(survey);
-                          setDeleteDialogOpen(true);
-                        }}
-                        startIcon={<DeleteIcon />}
-                        style={{ color: "red" }}
-                      />
-                    </Tooltip>
+                    <div style={{ display: "flex", alignContent: "center" }}>
+                      <Tooltip title="Edit">
+                        <Button
+                          onClick={() => handleEditSurvey(survey)}
+                          startIcon={<EditIcon />}
+                          style={{ marginLeft: 150 }}
+                        />
+                      </Tooltip>
+                      <Tooltip title="Copy survey link to clipboard">
+                        <Button
+                          onClick={() => handleShareSurvey(survey._id)}
+                          startIcon={<ShareIcon />}
+                        />
+                      </Tooltip>
+                      <Tooltip title="Delete">
+                        <Button
+                          onClick={() => {
+                            setSurveyToDelete(survey);
+                            setDeleteDialogOpen(true);
+                          }}
+                          startIcon={<DeleteIcon />}
+                          style={{ color: "red" }}
+                        />
+                      </Tooltip>
+                    </div>
                   </CardContent>
                 </Card>
               </Grid>

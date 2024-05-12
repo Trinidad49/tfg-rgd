@@ -4,6 +4,7 @@ import { SurveyList } from "./SurveyList";
 import LogoutIcon from "@mui/icons-material/Logout";
 import PollIcon from "@mui/icons-material/Poll";
 import AddIcon from "@mui/icons-material/Add";
+import ImportExportIcon from "@mui/icons-material/ImportExport";
 import {
   Container,
   Divider,
@@ -13,6 +14,7 @@ import {
   ListItemButton,
   ListItemText,
 } from "@mui/material";
+import { ImportCSV } from "../csv/ImportCSV";
 
 export const Dashboard = ({ onLogin }) => {
   const [selectedOption, setSelectedOption] = useState("Surveys");
@@ -25,7 +27,7 @@ export const Dashboard = ({ onLogin }) => {
     <Container maxWidth="lg" style={{ paddingTop: 20 }}>
       <Drawer variant="permanent" anchor="left">
         <List>
-          {["New Survey", "Surveys"].map((option) => (
+          {["New Survey", "Surveys", "Import"].map((option) => (
             <ListItemButton
               key={option}
               onClick={() => handleOptionClick(option)}
@@ -34,7 +36,13 @@ export const Dashboard = ({ onLogin }) => {
                 "&:hover": { backgroundColor: "#b6b6b6" },
               }}
             >
-              {option === "Surveys" ? <PollIcon /> : <AddIcon />}
+              {option === "Surveys" ? (
+                <PollIcon />
+              ) : option === "Import" ? (
+                <ImportExportIcon />
+              ) : (
+                <AddIcon />
+              )}
               <ListItemText style={{ marginLeft: 5 }} primary={option} />
             </ListItemButton>
           ))}
@@ -53,10 +61,11 @@ export const Dashboard = ({ onLogin }) => {
           </ListItemButton>
         </List>
       </Drawer>
-      <Grid container>
+      <Grid style={{ marginLeft: 50 }} container>
         <Grid item xs={13}>
           {selectedOption === "Surveys" && <SurveyList />}
           {selectedOption === "New Survey" && <SurveyForm />}
+          {selectedOption === "Import" && <ImportCSV />}
         </Grid>
       </Grid>
     </Container>
