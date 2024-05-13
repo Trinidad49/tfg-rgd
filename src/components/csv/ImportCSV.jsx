@@ -1,4 +1,6 @@
+import { Box, Button, Stack, Typography } from "@mui/material";
 import React, { useState } from "react";
+import PublishIcon from "@mui/icons-material/Publish";
 
 export const ImportCSV = ({ onImport }) => {
   const [csvData, setCSVData] = useState(null);
@@ -138,9 +140,57 @@ export const ImportCSV = ({ onImport }) => {
   };
 
   return (
-    <div>
-      <input type="file" onChange={handleFileChange} accept=".csv" />
-      <button onClick={handleImport}>Import CSV</button>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+      }}
+    >
+      <Stack spacing={4} alignItems="center" style={{ marginBottom: 100 }}>
+        <input
+          type="file"
+          onChange={handleFileChange}
+          accept=".csv"
+          style={{ display: "none" }}
+          id="fileInput"
+        />
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          width="200px"
+          height="200px"
+          border="2px dashed #aaa"
+          borderRadius="8px"
+          htmlFor="fileInput"
+          style={{ cursor: "pointer" }}
+        >
+          <PublishIcon fontSize="large" style={{ transform: "scale(1.8)" }} />
+          <Typography variant="body1" style={{ marginTop: "15px" }}>
+            Choose File
+          </Typography>
+        </Box>
+        <Stack direction="row" spacing={2}>
+          <Typography variant="h6">
+            {fileName === "" ? (
+              <>No file currently selected</>
+            ) : (
+              <>{fileName}</>
+            )}
+          </Typography>
+
+          <Button
+            style={{ maxWidth: 200 }}
+            variant="contained"
+            onClick={handleImport}
+          >
+            Import CSV
+          </Button>
+        </Stack>
+      </Stack>
     </div>
   );
 };
