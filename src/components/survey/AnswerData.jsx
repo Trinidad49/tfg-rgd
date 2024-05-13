@@ -3,7 +3,9 @@ import {
   Button,
   Card,
   CardContent,
+  Divider,
   LinearProgress,
+  Paper,
   Typography,
 } from "@mui/material";
 import { GenerateChart } from "./GenerateChart";
@@ -68,11 +70,18 @@ export const AnswerData = ({ survey }) => {
   };
 
   return (
-    <div>
-      <div style={{ display: "flex", margin: 20 }}>
+    <Paper style={{ backgroundColor: "white", margin: 10, padding: 30 }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
         <Typography variant="h4">{survey.title}</Typography>
         <GenerateCSV survey={survey} surveyData={surveyData} />
       </div>
+      <Divider style={{ marginBottom: 20, marginTop: 10 }} />
       {survey.questions.map((question, index) => (
         <Card key={index} variant="outlined" style={{ marginBottom: "16px" }}>
           <CardContent>
@@ -132,6 +141,6 @@ export const AnswerData = ({ survey }) => {
           </CardContent>
         </Card>
       ))}
-    </div>
+    </Paper>
   );
 };

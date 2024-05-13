@@ -9,6 +9,10 @@ import {
   Checkbox,
   Radio,
   RadioGroup,
+  Paper,
+  Divider,
+  CardContent,
+  Card,
 } from "@mui/material";
 
 export const AnswerSurvey = ({ surveyID }) => {
@@ -98,99 +102,117 @@ export const AnswerSurvey = ({ surveyID }) => {
 
   return (
     <Container maxWidth="lg">
-      <Typography variant="h3">{surveyData.title}</Typography>
-      {surveyData.questions.map((question, index) => (
-        <div key={index}>
-          <Typography variant="h5">
-            {question.text}
-            {question.mandatory && <span style={{ color: "red" }}> *</span>}
-            {answerCheck[index] && (
-              <span style={{ color: "red" }}>
-                {" "}
-                You must answer this question
-              </span>
-            )}
-          </Typography>
-          {question.type === "text" ? (
-            <TextField
-              label="Your Answer"
-              value={userAnswers[index].answer}
-              onChange={(e) => handleAnswerChange(index, e.target.value)}
-              fullWidth
-              margin="normal"
-            />
-          ) : question.type === "multipleChoice" ? (
-            <RadioGroup
-              aria-label="quiz"
-              name="quiz"
-              value={userAnswers[index].answer}
-              onChange={(e) => handleAnswerChange(index, e.target.value)}
-            >
-              <Grid container spacing={2}>
-                {question.answers.map((option, optionIndex) => (
-                  <Grid item xs={6} key={optionIndex}>
-                    <FormControlLabel
-                      value={option.text}
-                      control={<Radio />}
-                      label={option.text}
-                    />
-                  </Grid>
-                ))}
-              </Grid>
-            </RadioGroup>
-          ) : question.type === "linear" ? (
-            <RadioGroup
-              aria-label="quiz"
-              name="quiz"
-              value={userAnswers[index].answer}
-              onChange={(e) => handleAnswerChange(index, e.target.value)}
-            >
-              <Grid container spacing={1}>
-                {question.answers.map((option, optionIndex) => (
-                  <Grid item xs={1} key={optionIndex}>
-                    <Typography align="center">{option.text}</Typography>
-                    <FormControlLabel value={option.text} control={<Radio />} />
-                  </Grid>
-                ))}
-              </Grid>
-            </RadioGroup>
-          ) : (
-            <Grid container spacing={2}>
-              {question.answers.map((option, optionIndex) => (
-                <Grid item xs={6} key={optionIndex}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={userAnswers[index].answer.includes(
-                          option.text
-                        )}
-                        onChange={(e) => {
-                          const checked = e.target.checked;
-                          const updatedAnswers =
-                            userAnswers[index].answer.slice(); // Create a copy
-                          if (checked) {
-                            updatedAnswers.push(option.text);
-                          } else {
-                            const index = updatedAnswers.indexOf(option.text);
-                            if (index > -1) {
-                              updatedAnswers.splice(index, 1);
-                            }
-                          }
-                          handleAnswerChange(index, updatedAnswers);
-                        }}
-                      />
-                    }
-                    label={option.text}
-                  />
-                </Grid>
-              ))}
-            </Grid>
-          )}
+      <Paper style={{ backgroundColor: "white", margin: 10, padding: 30 }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <Typography variant="h3">{surveyData.title}</Typography>
         </div>
-      ))}
-      <Button variant="contained" onClick={handleSaveAnswers}>
-        Save Answers
-      </Button>
+        <Divider style={{ marginBottom: 20, marginTop: 10 }} />
+        {surveyData.questions.map((question, index) => (
+          <Card variant="outlined" style={{ marginBottom: "16px" }}>
+            <CardContent key={index}>
+              <Typography variant="h5">
+                {question.text}
+                {question.mandatory && <span style={{ color: "red" }}> *</span>}
+                {answerCheck[index] && (
+                  <span style={{ color: "red" }}>
+                    {" "}
+                    You must answer this question
+                  </span>
+                )}
+              </Typography>
+              {question.type === "text" ? (
+                <TextField
+                  label="Your Answer"
+                  value={userAnswers[index].answer}
+                  onChange={(e) => handleAnswerChange(index, e.target.value)}
+                  fullWidth
+                  margin="normal"
+                />
+              ) : question.type === "multipleChoice" ? (
+                <RadioGroup
+                  aria-label="quiz"
+                  name="quiz"
+                  value={userAnswers[index].answer}
+                  onChange={(e) => handleAnswerChange(index, e.target.value)}
+                >
+                  <Grid container spacing={2}>
+                    {question.answers.map((option, optionIndex) => (
+                      <Grid item xs={6} key={optionIndex}>
+                        <FormControlLabel
+                          value={option.text}
+                          control={<Radio />}
+                          label={option.text}
+                        />
+                      </Grid>
+                    ))}
+                  </Grid>
+                </RadioGroup>
+              ) : question.type === "linear" ? (
+                <RadioGroup
+                  aria-label="quiz"
+                  name="quiz"
+                  value={userAnswers[index].answer}
+                  onChange={(e) => handleAnswerChange(index, e.target.value)}
+                >
+                  <Grid container spacing={1}>
+                    {question.answers.map((option, optionIndex) => (
+                      <Grid item xs={1} key={optionIndex}>
+                        <Typography align="center">{option.text}</Typography>
+                        <FormControlLabel
+                          value={option.text}
+                          control={<Radio />}
+                        />
+                      </Grid>
+                    ))}
+                  </Grid>
+                </RadioGroup>
+              ) : (
+                <Grid container spacing={2}>
+                  {question.answers.map((option, optionIndex) => (
+                    <Grid item xs={6} key={optionIndex}>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={userAnswers[index].answer.includes(
+                              option.text
+                            )}
+                            onChange={(e) => {
+                              const checked = e.target.checked;
+                              const updatedAnswers =
+                                userAnswers[index].answer.slice(); // Create a copy
+                              if (checked) {
+                                updatedAnswers.push(option.text);
+                              } else {
+                                const index = updatedAnswers.indexOf(
+                                  option.text
+                                );
+                                if (index > -1) {
+                                  updatedAnswers.splice(index, 1);
+                                }
+                              }
+                              handleAnswerChange(index, updatedAnswers);
+                            }}
+                          />
+                        }
+                        label={option.text}
+                      />
+                    </Grid>
+                  ))}
+                </Grid>
+              )}
+            </CardContent>
+          </Card>
+        ))}
+        <Button variant="contained" onClick={handleSaveAnswers}>
+          Save Answers
+        </Button>
+      </Paper>
     </Container>
   );
 };
