@@ -13,6 +13,8 @@ import {
   Divider,
   CardContent,
   Card,
+  Stack,
+  Box,
 } from "@mui/material";
 
 export const AnswerSurvey = ({ surveyID }) => {
@@ -116,11 +118,11 @@ export const AnswerSurvey = ({ surveyID }) => {
         {surveyData.questions.map((question, index) => (
           <Card variant="outlined" style={{ marginBottom: "16px" }}>
             <CardContent key={index}>
-              <Typography variant="h5">
+              <Typography variant="h5" style={{ marginBottom: 10 }}>
                 {question.text}
                 {question.mandatory && <span style={{ color: "red" }}> *</span>}
                 {answerCheck[index] && (
-                  <span style={{ color: "red" }}>
+                  <span style={{ color: "red", fontSize: 17 }}>
                     {" "}
                     You must answer this question
                   </span>
@@ -128,10 +130,12 @@ export const AnswerSurvey = ({ surveyID }) => {
               </Typography>
               {question.type === "text" ? (
                 <TextField
-                  label="Your Answer"
+                  placeholder="Answer"
                   value={userAnswers[index].answer}
                   onChange={(e) => handleAnswerChange(index, e.target.value)}
                   fullWidth
+                  multiline
+                  variant="standard"
                   margin="normal"
                 />
               ) : question.type === "multipleChoice" ? (
@@ -141,7 +145,7 @@ export const AnswerSurvey = ({ surveyID }) => {
                   value={userAnswers[index].answer}
                   onChange={(e) => handleAnswerChange(index, e.target.value)}
                 >
-                  <Grid container spacing={2}>
+                  <Grid container>
                     {question.answers.map((option, optionIndex) => (
                       <Grid item xs={6} key={optionIndex}>
                         <FormControlLabel
@@ -154,26 +158,37 @@ export const AnswerSurvey = ({ surveyID }) => {
                   </Grid>
                 </RadioGroup>
               ) : question.type === "linear" ? (
-                <RadioGroup
-                  aria-label="quiz"
-                  name="quiz"
-                  value={userAnswers[index].answer}
-                  onChange={(e) => handleAnswerChange(index, e.target.value)}
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  style={{ marginLeft: 100 }}
                 >
-                  <Grid container spacing={1}>
-                    {question.answers.map((option, optionIndex) => (
-                      <Grid item xs={1} key={optionIndex}>
-                        <Typography align="center">{option.text}</Typography>
-                        <FormControlLabel
-                          value={option.text}
-                          control={<Radio />}
-                        />
-                      </Grid>
-                    ))}
-                  </Grid>
-                </RadioGroup>
+                  <RadioGroup
+                    aria-label="quiz"
+                    name="quiz"
+                    value={userAnswers[index].answer}
+                    onChange={(e) => handleAnswerChange(index, e.target.value)}
+                  >
+                    <Grid container spacing={3}>
+                      {question.answers.map((option, optionIndex) => (
+                        <Grid item xs={1} key={optionIndex}>
+                          <Stack alignContent="center">
+                            <Typography style={{ marginLeft: 5 }}>
+                              {option.text}
+                            </Typography>
+                            <FormControlLabel
+                              value={option.text}
+                              control={<Radio />}
+                            />
+                          </Stack>
+                        </Grid>
+                      ))}
+                    </Grid>
+                  </RadioGroup>
+                </Box>
               ) : (
-                <Grid container spacing={2}>
+                <Grid container>
                   {question.answers.map((option, optionIndex) => (
                     <Grid item xs={6} key={optionIndex}>
                       <FormControlLabel

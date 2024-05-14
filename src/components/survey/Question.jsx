@@ -91,6 +91,7 @@ export const Question = ({ index, question, onUpdate, onRemove }) => {
               value={question.text}
               onChange={(e) => handleUpdateText(e.target.value)}
               fullWidth
+              multiline
               variant="standard"
               margin="normal"
             />
