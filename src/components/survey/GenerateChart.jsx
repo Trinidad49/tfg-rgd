@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Plot from "react-plotly.js";
-import { Button, TextField } from "@mui/material";
+import { Box, MenuItem, Select, Stack, TextField } from "@mui/material";
 
 export const GenerateChart = ({ data, text }) => {
   const [chartType, setChartType] = useState("bar");
@@ -86,28 +86,18 @@ export const GenerateChart = ({ data, text }) => {
   };
 
   return (
-    <div>
-      <div>
-        <Button
-          variant={chartType === "barh" ? "contained" : "outlined"}
-          onClick={() => handleChartTypeChange("barh")}
+    <Box display="flex" flexDirection="column" alignItems="center">
+      <Box>{renderChart()}</Box>
+      <Stack direction="row" spacing={2} marginBottom={2}>
+        <Select
+          value={chartType}
+          onChange={(e) => handleChartTypeChange(e.target.value)}
+          variant="outlined"
         >
-          Horizontal Bar
-        </Button>
-        <Button
-          variant={chartType === "bar" ? "contained" : "outlined"}
-          onClick={() => handleChartTypeChange("bar")}
-        >
-          Bar
-        </Button>
-        <Button
-          variant={chartType === "donut" ? "contained" : "outlined"}
-          onClick={() => handleChartTypeChange("donut")}
-        >
-          Donut
-        </Button>
-      </div>
-      <div>
+          <MenuItem value="barh">Horizontal Bar</MenuItem>
+          <MenuItem value="bar">Bar</MenuItem>
+          <MenuItem value="donut">Donut</MenuItem>
+        </Select>
         <TextField
           label="Chart Title"
           value={title}
@@ -119,7 +109,6 @@ export const GenerateChart = ({ data, text }) => {
               label="X Axis Title"
               value={xAxisTitle}
               onChange={(e) => setXAxisTitle(e.target.value)}
-              style={{ marginRight: "10px" }}
             />
             <TextField
               label="Y Axis Title"
@@ -128,8 +117,7 @@ export const GenerateChart = ({ data, text }) => {
             />
           </>
         )}
-      </div>
-      {renderChart()}
-    </div>
+      </Stack>
+    </Box>
   );
 };

@@ -90,17 +90,26 @@ export const AnswerData = ({ survey }) => {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
+                marginBottom: 10,
               }}
             >
               <Typography variant="h6">{question.text}</Typography>
-              <Button
-                variant={showChart[index] ? "contained" : "outlined"}
-                color="primary"
-                onClick={() => handleGenerateChart(index)}
-              >
-                {showChart[index] ? "Close Chart" : "Generate Chart"}
-              </Button>
+              {question.type !== "text" && (
+                <Button
+                  variant={showChart[index] ? "contained" : "outlined"}
+                  color="primary"
+                  onClick={() => handleGenerateChart(index)}
+                >
+                  {showChart[index] ? "Close Chart" : "Generate Chart"}
+                </Button>
+              )}
             </div>
+            {showChart[index] && (
+              <GenerateChart
+                data={getChartData(index)}
+                text={survey.questions[index].text}
+              />
+            )}
             {question.type === "text" ? (
               <div style={{ maxHeight: "200px", overflowY: "auto" }}>
                 {surveyData.map((answers, i) => (
@@ -131,12 +140,6 @@ export const AnswerData = ({ survey }) => {
                   </div>
                 ))}
               </div>
-            )}
-            {showChart[index] && (
-              <GenerateChart
-                data={getChartData(index)}
-                text={survey.questions[index].text}
-              />
             )}
           </CardContent>
         </Card>

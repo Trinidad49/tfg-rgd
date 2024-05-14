@@ -39,8 +39,8 @@ export const GenerateCSV = ({ survey, surveyData }) => {
   };
 
   return (
-    <div>
-      <Button onClick={handleDownloadCSV}>Download CSV</Button>
-    </div>
+    <Button variant="contained" onClick={handleDownloadCSV}>
+      Download CSV
+    </Button>
   );
 };
