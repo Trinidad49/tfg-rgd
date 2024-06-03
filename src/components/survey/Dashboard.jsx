@@ -16,7 +16,7 @@ import {
   ListItemText,
 } from "@mui/material";
 import { ImportCSV } from "../csv/ImportCSV";
-import { ChartHandler } from "./ChartHandler";
+import { ChartMenu } from "./ChartMenu";
 
 export const Dashboard = ({ onLogin }) => {
   const [selectedOption, setSelectedOption] = useState("Surveys");
@@ -70,7 +70,7 @@ export const Dashboard = ({ onLogin }) => {
           {selectedOption === "Surveys" && <SurveyList />}
           {selectedOption === "New Survey" && <SurveyForm />}
           {selectedOption === "Import" && <ImportCSV />}
-          {selectedOption === "Graphic" && <ChartHandler />}
+          {selectedOption === "Graphic" && <ChartMenu />}
         </Grid>
       </Grid>
     </Container>
