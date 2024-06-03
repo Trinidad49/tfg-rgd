@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  Button,
   Card,
   CardContent,
   Divider,
@@ -8,23 +7,10 @@ import {
   Paper,
   Typography,
 } from "@mui/material";
-import { GenerateChart } from "./GenerateChart";
 import { GenerateCSV } from "../csv/GenerateCSV";
 
 export const AnswerData = ({ survey }) => {
   const [surveyData, setSurveyData] = useState(null);
-  const [showChart, setShowChart] = useState(
-    Array(survey.questions.length).fill(false)
-  );
-  console.log(surveyData);
-
-  const handleGenerateChart = (index) => {
-    setShowChart((prevShowChart) => {
-      const updatedShowChart = [...prevShowChart];
-      updatedShowChart[index] = !updatedShowChart[index];
-      return updatedShowChart;
-    });
-  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,14 +47,6 @@ export const AnswerData = ({ survey }) => {
           (a) => a.answers[questionIndex]?.answer === optionText
         ).length;
 
-  const getChartData = (index) => {
-    const data = [];
-    survey.questions[index].answers.map((a) =>
-      data.push({ text: a.text, count: getAnswerCount(a.text, index) })
-    );
-    return data;
-  };
-
   return (
     <Paper style={{ backgroundColor: "white", margin: 10, padding: 30 }}>
       <div
@@ -94,22 +72,7 @@ export const AnswerData = ({ survey }) => {
               }}
             >
               <Typography variant="h6">{question.text}</Typography>
-              {question.type !== "text" && (
-                <Button
-                  variant={showChart[index] ? "contained" : "outlined"}
-                  color="primary"
-                  onClick={() => handleGenerateChart(index)}
-                >
-                  {showChart[index] ? "Close Chart" : "Generate Chart"}
-                </Button>
-              )}
             </div>
-            {showChart[index] && (
-              <GenerateChart
-                data={getChartData(index)}
-                text={survey.questions[index].text}
-              />
-            )}
             {question.type === "text" ? (
               <div style={{ maxHeight: "200px", overflowY: "auto" }}>
                 {surveyData.map((answers, i) => (
