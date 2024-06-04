@@ -72,7 +72,7 @@ export const ChartHandler = ({ survey }) => {
         renderInput={(params) => (
           <TextField {...params} label="Select Question" variant="outlined" />
         )}
-        style={{ width: "100%", marginTop: "20px" }}
+        style={{ width: "100%", marginTop: "20px", marginBottom: "20px" }}
       />
       {chartData && <GenerateChart data={chartData} text={currentTitle} />}
     </>

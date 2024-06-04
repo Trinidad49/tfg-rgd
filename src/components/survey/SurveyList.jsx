@@ -1,7 +1,4 @@
 import {
-  Card,
-  CardContent,
-  Grid,
   Typography,
   Button,
   Dialog,
@@ -10,6 +7,14 @@ import {
   DialogActions,
   Tooltip,
   Snackbar,
+  TableContainer,
+  TextField,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableSortLabel,
+  TableBody,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import ShareIcon from "@mui/icons-material/Share";
@@ -24,6 +29,9 @@ export const SurveyList = () => {
   const [surveyToDelete, setSurveyToDelete] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [order, setOrder] = useState("asc");
+  const [orderBy, setOrderBy] = useState("title");
+  const [filter, setFilter] = useState("");
 
   const fetchSurveys = async () => {
     try {
@@ -51,6 +59,7 @@ export const SurveyList = () => {
 
   const handleEditSurvey = (survey) => {
     setSelectedSurvey(survey);
+    console.log(survey);
   };
 
   const handleExitEdit = () => {
@@ -99,24 +108,67 @@ export const SurveyList = () => {
     setSnackbarOpen(false);
   };
 
+  const handleRequestSort = (property) => {
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
+    setOrderBy(property);
+  };
+
+  const handleFilterChange = (event) => {
+    setFilter(event.target.value);
+  };
+
+  const filteredSurveys = surveys.filter((survey) =>
+    survey.title.toLowerCase().includes(filter.toLowerCase())
+  );
+
+  const sortedSurveys = filteredSurveys.sort((a, b) => {
+    if (order === "asc") {
+      return a[orderBy].localeCompare(b[orderBy]);
+    }
+    return b[orderBy].localeCompare(a[orderBy]);
+  });
+
   return (
     <div>
       {!selectedSurvey && (
-        <div>
-          <Grid container spacing={2}>
-            {surveys.map((survey) => (
-              <Grid item key={survey._id} xs={12} md={4}>
-                <Card style={{ minHeight: 150 }}>
-                  <CardContent>
-                    <Typography height={100} variant="h6">
-                      {survey.title}
-                    </Typography>
-                    <div style={{ display: "flex", alignContent: "center" }}>
+        <div style={{ marginTop: "20px" }}>
+          <TableContainer>
+            <TextField
+              label="Filter by Title"
+              value={filter}
+              onChange={handleFilterChange}
+              style={{ marginBottom: 20 }}
+            />
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell
+                    sortDirection={orderBy === "title" ? order : false}
+                  >
+                    <TableSortLabel
+                      active={orderBy === "title"}
+                      direction={orderBy === "title" ? order : "asc"}
+                      onClick={() => handleRequestSort("title")}
+                    >
+                      Title
+                    </TableSortLabel>
+                  </TableCell>
+                  <TableCell>Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {sortedSurveys.map((survey) => (
+                  <TableRow key={survey._id}>
+                    <TableCell>
+                      <Typography variant="h6">{survey.title}</Typography>
+                    </TableCell>
+                    <TableCell>
                       <Tooltip title="Edit">
                         <Button
                           onClick={() => handleEditSurvey(survey)}
                           startIcon={<EditIcon />}
-                          style={{ marginLeft: 150 }}
+                          style={{ marginLeft: 20 }}
                         />
                       </Tooltip>
                       <Tooltip title="Copy survey link to clipboard">
@@ -135,12 +187,12 @@ export const SurveyList = () => {
                           style={{ color: "red" }}
                         />
                       </Tooltip>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
           <Dialog
             open={deleteDialogOpen}
             onClose={() => setDeleteDialogOpen(false)}
