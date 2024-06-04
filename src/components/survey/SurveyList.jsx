@@ -21,6 +21,7 @@ import ShareIcon from "@mui/icons-material/Share";
 import DeleteIcon from "@mui/icons-material/Delete";
 import React, { useState, useEffect } from "react";
 import { SurveyMenu } from "./SurveyMenu";
+import { format } from "date-fns";
 
 export const SurveyList = () => {
   const [surveys, setSurveys] = useState([]);
@@ -123,10 +124,19 @@ export const SurveyList = () => {
   );
 
   const sortedSurveys = filteredSurveys.sort((a, b) => {
-    if (order === "asc") {
-      return a[orderBy].localeCompare(b[orderBy]);
+    if (orderBy === "createdAt") {
+      const dateA = new Date(a[orderBy]);
+      const dateB = new Date(b[orderBy]);
+      if (order === "asc") {
+        return dateA - dateB;
+      }
+      return dateB - dateA;
+    } else {
+      if (order === "asc") {
+        return a[orderBy].localeCompare(b[orderBy]);
+      }
+      return b[orderBy].localeCompare(a[orderBy]);
     }
-    return b[orderBy].localeCompare(a[orderBy]);
   });
 
   return (
@@ -138,7 +148,7 @@ export const SurveyList = () => {
               label="Filter by Title"
               value={filter}
               onChange={handleFilterChange}
-              style={{ marginBottom: 20 }}
+              style={{ marginBottom: 20, marginTop: 20 }}
             />
             <Table>
               <TableHead>
@@ -154,6 +164,17 @@ export const SurveyList = () => {
                       Title
                     </TableSortLabel>
                   </TableCell>
+                  <TableCell
+                    sortDirection={orderBy === "createdAt" ? order : false}
+                  >
+                    <TableSortLabel
+                      active={orderBy === "createdAt"}
+                      direction={orderBy === "createdAt" ? order : "asc"}
+                      onClick={() => handleRequestSort("createdAt")}
+                    >
+                      Date Created
+                    </TableSortLabel>
+                  </TableCell>
                   <TableCell>Actions</TableCell>
                 </TableRow>
               </TableHead>
@@ -164,11 +185,15 @@ export const SurveyList = () => {
                       <Typography variant="h6">{survey.title}</Typography>
                     </TableCell>
                     <TableCell>
+                      <Typography variant="body2">
+                        {format(new Date(survey.createdAt), "yyyy-MM-dd HH:mm")}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
                       <Tooltip title="Edit">
                         <Button
                           onClick={() => handleEditSurvey(survey)}
                           startIcon={<EditIcon />}
-                          style={{ marginLeft: 20 }}
                         />
                       </Tooltip>
                       <Tooltip title="Copy survey link to clipboard">
