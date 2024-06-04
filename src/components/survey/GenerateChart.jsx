@@ -88,7 +88,7 @@ export const GenerateChart = ({ data, text }) => {
   return (
     <Box display="flex" flexDirection="column" alignItems="center">
       <Box>{renderChart()}</Box>
-      <Stack direction="row" spacing={2} marginBottom={2}>
+      <Stack direction="row" spacing={2} marginBottom={2} marginTop={3}>
         <Select
           value={chartType}
           onChange={(e) => handleChartTypeChange(e.target.value)}

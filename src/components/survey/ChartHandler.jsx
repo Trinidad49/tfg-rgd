@@ -1,6 +1,5 @@
 import { Autocomplete, TextField, Typography } from "@mui/material";
-import React, { useEffect } from "react";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { GenerateChart } from "./GenerateChart";
 
 export const ChartHandler = ({ survey }) => {
@@ -45,26 +44,26 @@ export const ChartHandler = ({ survey }) => {
 
   const getChartData = (index) => {
     const data = [];
-    survey.questions[index].answers.map((a) =>
+    survey.questions[index].answers.forEach((a) =>
       data.push({ text: a.text, count: getAnswerCount(a.text, index) })
     );
     return data;
   };
 
   const handleQuestionChange = (event, value) => {
-    const index = getIndex(survey.questions, value);
-    setCurrentTitle(survey.questions[index].text);
-    setChartData(getChartData(index));
+    if (value) {
+      const index = survey.questions.findIndex((q) => q.text === value.text);
+      if (index !== -1) {
+        setCurrentTitle(survey.questions[index].text);
+        setChartData(getChartData(index));
+      }
+    }
   };
 
-  const getIndex = (array, item) => {
-    return array.findIndex((element) => element === item);
-  };
-  console.log(chartData, currentTitle);
+  console.log("ChartData or CurrentTitle updated:", chartData, currentTitle);
 
   return (
     <>
-      {" "}
       <Autocomplete
         options={survey.questions}
         getOptionLabel={(option) => option.text}
