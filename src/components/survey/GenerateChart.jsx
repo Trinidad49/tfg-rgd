@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Plot from "react-plotly.js";
 import { Box, MenuItem, Select, Stack, TextField } from "@mui/material";
 
@@ -8,12 +8,19 @@ export const GenerateChart = ({ data, text }) => {
   const [xAxisTitle, setXAxisTitle] = useState("X Axis");
   const [yAxisTitle, setYAxisTitle] = useState("Y Axis");
 
-  const [countArray] = useState(
-    Array.isArray(data) ? data.map((a) => a.count) : []
-  );
-  const [textArray] = useState(
-    Array.isArray(data) ? data.map((a) => a.text) : []
-  );
+  const [countArray, setCountArray] = useState([]);
+  const [textArray, setTextArray] = useState([]);
+
+  useEffect(() => {
+    if (Array.isArray(data)) {
+      setCountArray(data.map((a) => a.count));
+      setTextArray(data.map((a) => a.text));
+    }
+  }, [data]);
+
+  useEffect(() => {
+    setTitle(text);
+  }, [text]);
 
   const handleChartTypeChange = (type) => {
     setChartType(type);
