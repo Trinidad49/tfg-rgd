@@ -1,6 +1,26 @@
-import React, { useEffect, useState } from "react";
-import Plot from "react-plotly.js";
-import { Box, MenuItem, Select, Stack, TextField } from "@mui/material";
+import React, { useEffect, useState, useRef } from "react";
+import { Box, MenuItem, Select, Stack, TextField, Button } from "@mui/material";
+import { Bar, Pie } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+} from "chart.js";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement
+);
 
 export const GenerateChart = ({ data, text }) => {
   const [chartType, setChartType] = useState("bar");
@@ -8,15 +28,27 @@ export const GenerateChart = ({ data, text }) => {
   const [xAxisTitle, setXAxisTitle] = useState("X Axis");
   const [yAxisTitle, setYAxisTitle] = useState("Y Axis");
 
-  const [countArray, setCountArray] = useState([]);
-  const [textArray, setTextArray] = useState([]);
+  const chartRef = useRef(null);
+
+  const [chartData, setChartData] = useState({
+    labels: [],
+    datasets: [],
+  });
 
   useEffect(() => {
     if (Array.isArray(data)) {
-      setCountArray(data.map((a) => a.count));
-      setTextArray(data.map((a) => a.text));
+      setChartData({
+        labels: data.map((a) => a.text),
+        datasets: [
+          {
+            label: title,
+            data: data.map((a) => a.count),
+            backgroundColor: "green",
+          },
+        ],
+      });
     }
-  }, [data]);
+  }, [data, title]);
 
   useEffect(() => {
     setTitle(text);
@@ -27,63 +59,75 @@ export const GenerateChart = ({ data, text }) => {
   };
 
   const renderChart = () => {
+    const commonOptions = {
+      responsive: true,
+      plugins: {
+        title: {
+          display: true,
+          text: title,
+        },
+      },
+    };
+
     switch (chartType) {
       case "barh":
         return (
-          <Plot
-            data={[
-              {
-                x: countArray,
-                y: textArray,
-                type: "bar",
-                orientation: "h",
-                marker: { color: "green" },
-                name: "Horizontal Bar Chart",
+          <Bar
+            ref={chartRef}
+            data={chartData}
+            options={{
+              ...commonOptions,
+              indexAxis: "y",
+              scales: {
+                x: {
+                  title: {
+                    display: true,
+                    text: xAxisTitle,
+                  },
+                },
+                y: {
+                  title: {
+                    display: true,
+                    text: yAxisTitle,
+                  },
+                },
               },
-            ]}
-            layout={{
-              title: title,
-              xaxis: { title: xAxisTitle, tickmode: "linear" },
-              yaxis: { title: yAxisTitle },
-              hovermode: false,
             }}
           />
         );
       case "bar":
         return (
-          <Plot
-            data={[
-              {
-                x: textArray,
-                y: countArray,
-                type: "bar",
-                marker: { color: "green" },
-                name: "Bar Chart",
+          <Bar
+            ref={chartRef}
+            data={chartData}
+            options={{
+              ...commonOptions,
+              indexAxis: "x",
+              scales: {
+                x: {
+                  title: {
+                    display: true,
+                    text: xAxisTitle,
+                  },
+                },
+                y: {
+                  title: {
+                    display: true,
+                    text: yAxisTitle,
+                  },
+                },
               },
-            ]}
-            layout={{
-              title: title,
-              xaxis: { title: xAxisTitle },
-              yaxis: { title: yAxisTitle, tickmode: "linear" },
-              hovermode: false,
             }}
           />
         );
       case "donut":
         return (
-          <Plot
-            data={[
-              {
-                values: countArray,
-                labels: textArray,
-                type: "pie",
-                hole: 0.4,
-                name: "Donut Chart",
-              },
-            ]}
-            layout={{
-              title: title,
-              hovermode: false,
+          <Pie
+            ref={chartRef}
+            data={chartData}
+            options={{
+              ...commonOptions,
+              cutout: "40%",
             }}
           />
         );
@@ -92,9 +136,22 @@ export const GenerateChart = ({ data, text }) => {
     }
   };
 
+  const downloadChart = () => {
+    if (chartRef.current) {
+      const chart = chartRef.current;
+      const url = chart.toBase64Image();
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "chart.png";
+      link.click();
+    }
+  };
+
   return (
     <Box display="flex" flexDirection="column" alignItems="center">
-      <Box>{renderChart()}</Box>
+      <Box width="100%" maxWidth={800}>
+        {renderChart()}
+      </Box>
       <Stack direction="row" spacing={2} marginBottom={2} marginTop={3}>
         <Select
           value={chartType}
@@ -125,6 +182,9 @@ export const GenerateChart = ({ data, text }) => {
           </>
         )}
       </Stack>
+      <Button variant="contained" onClick={downloadChart}>
+        Download Chart as PNG
+      </Button>
     </Box>
   );
 };
