@@ -66,7 +66,6 @@ export const GenerateChart = ({ data, text }) => {
         labels: data.map((a) => a.text),
         datasets: [
           {
-            label: title,
             data: data.map((a) => a.count),
             backgroundColor:
               chartType === "donut" ? colors.slice(0, data.length) : "green",
@@ -74,7 +73,7 @@ export const GenerateChart = ({ data, text }) => {
         ],
       });
     }
-  }, [data, title, chartType]);
+  }, [data, chartType]);
 
   const handleChartTypeChange = (type) => {
     setChartType(type);
@@ -87,6 +86,9 @@ export const GenerateChart = ({ data, text }) => {
         title: {
           display: true,
           text: title,
+        },
+        legend: {
+          display: chartType === "donut",
         },
       },
     };
