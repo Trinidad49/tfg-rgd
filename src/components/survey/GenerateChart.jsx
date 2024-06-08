@@ -22,6 +22,20 @@ ChartJS.register(
   ArcElement
 );
 
+const baseColorPalette = [
+  "#4e79a7",
+  "#f28e2b",
+  "#e15759",
+  "#76b7b2",
+  "#59a14f",
+  "#edc949",
+  "#af7aa1",
+  "#ff9da7",
+  "#9c755f",
+  "#bab0ac",
+];
+const generateColor = (index) => `hsl(${index * 30}, 70%, 50%)`;
+
 export const GenerateChart = ({ data, text }) => {
   const [chartType, setChartType] = useState("bar");
   const [title, setTitle] = useState(text);
@@ -37,22 +51,30 @@ export const GenerateChart = ({ data, text }) => {
 
   useEffect(() => {
     if (Array.isArray(data)) {
+      const colors =
+        data.length > baseColorPalette.length
+          ? [
+              ...baseColorPalette,
+              ...Array.from(
+                { length: data.length - baseColorPalette.length },
+                (_, i) => generateColor(i)
+              ),
+            ]
+          : baseColorPalette;
+
       setChartData({
         labels: data.map((a) => a.text),
         datasets: [
           {
             label: title,
             data: data.map((a) => a.count),
-            backgroundColor: "green",
+            backgroundColor:
+              chartType === "donut" ? colors.slice(0, data.length) : "green",
           },
         ],
       });
     }
-  }, [data, title]);
-
-  useEffect(() => {
-    setTitle(text);
-  }, [text]);
+  }, [data, title, chartType]);
 
   const handleChartTypeChange = (type) => {
     setChartType(type);
@@ -149,7 +171,7 @@ export const GenerateChart = ({ data, text }) => {
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center">
-      <Box width="100%" maxWidth={800}>
+      <Box width="100%" maxWidth={800} maxHeight={600}>
         {renderChart()}
       </Box>
       <Stack direction="row" spacing={2} marginBottom={2} marginTop={3}>
@@ -181,10 +203,10 @@ export const GenerateChart = ({ data, text }) => {
             />
           </>
         )}
+        <Button variant="contained" onClick={downloadChart}>
+          Download Chart as PNG
+        </Button>
       </Stack>
-      <Button variant="contained" onClick={downloadChart}>
-        Download Chart as PNG
-      </Button>
     </Box>
   );
 };
