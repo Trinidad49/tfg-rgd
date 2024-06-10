@@ -1,26 +1,8 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Box, MenuItem, Select, Stack, TextField, Button } from "@mui/material";
-import { Bar, Pie } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
-} from "chart.js";
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement
-);
+import React, { useState, useRef } from "react";
+import { Box, Button, MenuItem, Select, Stack, TextField } from "@mui/material";
+import { ResponsiveBar } from "@nivo/bar";
+import { ResponsivePie } from "@nivo/pie";
+import { toPng } from "html-to-image";
 
 const baseColorPalette = [
   "#4e79a7",
@@ -34,125 +16,145 @@ const baseColorPalette = [
   "#9c755f",
   "#bab0ac",
 ];
+
 const generateColor = (index) => `hsl(${index * 30}, 70%, 50%)`;
 
-export const GenerateChart = ({ data, text }) => {
+export const GenerateChart = ({ text, data }) => {
   const [chartType, setChartType] = useState("bar");
   const [title, setTitle] = useState(text);
-  const [xAxisTitle, setXAxisTitle] = useState("X Axis");
-  const [yAxisTitle, setYAxisTitle] = useState("Y Axis");
-
   const chartRef = useRef(null);
 
-  const [chartData, setChartData] = useState({
-    labels: [],
-    datasets: [],
-  });
-
-  useEffect(() => {
-    if (Array.isArray(data)) {
-      const colors =
-        data.length > baseColorPalette.length
-          ? [
-              ...baseColorPalette,
-              ...Array.from(
-                { length: data.length - baseColorPalette.length },
-                (_, i) => generateColor(i)
-              ),
-            ]
-          : baseColorPalette;
-
-      setChartData({
-        labels: data.map((a) => a.text),
-        datasets: [
-          {
-            data: data.map((a) => a.count),
-            backgroundColor:
-              chartType === "donut" ? colors.slice(0, data.length) : "green",
-          },
-        ],
-      });
-    }
-  }, [data, chartType]);
+  const formattedData = data.map((d, i) => ({
+    id: d.text,
+    label: d.text,
+    value: d.count,
+    color:
+      data.length > baseColorPalette.length
+        ? generateColor(i)
+        : baseColorPalette[i],
+  }));
 
   const handleChartTypeChange = (type) => {
     setChartType(type);
   };
 
-  const renderChart = () => {
-    const commonOptions = {
-      responsive: true,
-      plugins: {
-        title: {
-          display: true,
-          text: title,
-        },
-        legend: {
-          display: chartType === "donut",
-        },
-      },
-    };
+  const downloadChart = () => {
+    if (chartRef.current) {
+      toPng(chartRef.current)
+        .then((dataUrl) => {
+          const link = document.createElement("a");
+          link.href = dataUrl;
+          link.download = `${title}.png`;
+          link.click();
+        })
+        .catch((error) => {
+          console.error("Error generating chart image:", error);
+        });
+    }
+  };
 
+  const renderChart = () => {
     switch (chartType) {
       case "barh":
         return (
-          <Bar
-            ref={chartRef}
-            data={chartData}
-            options={{
-              ...commonOptions,
-              indexAxis: "y",
-              scales: {
-                x: {
-                  title: {
-                    display: true,
-                    text: xAxisTitle,
-                  },
-                },
-                y: {
-                  title: {
-                    display: true,
-                    text: yAxisTitle,
-                  },
-                },
-              },
+          <ResponsiveBar
+            data={formattedData}
+            keys={["value"]}
+            indexBy="id"
+            margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
+            padding={0.3}
+            layout="horizontal"
+            colors={({ id, data }) => data.color}
+            borderColor={{ from: "color", modifiers: [["darker", 1.6]] }}
+            axisTop={null}
+            axisRight={null}
+            axisBottom={{
+              tickSize: 5,
+              tickPadding: 5,
+              tickRotation: 0,
+              legend: "Count",
+              legendPosition: "middle",
+              legendOffset: 32,
             }}
+            axisLeft={{
+              tickSize: 5,
+              tickPadding: 5,
+              tickRotation: 0,
+              legend: "Answers",
+              legendPosition: "middle",
+              legendOffset: -40,
+            }}
+            labelSkipWidth={12}
+            labelSkipHeight={12}
+            labelTextColor={{ from: "color", modifiers: [["darker", 1.6]] }}
           />
         );
       case "bar":
+        const totalCount = formattedData.reduce(
+          (acc, data) => acc + data.value,
+          0
+        );
+
         return (
-          <Bar
-            ref={chartRef}
-            data={chartData}
-            options={{
-              ...commonOptions,
-              indexAxis: "x",
-              scales: {
-                x: {
-                  title: {
-                    display: true,
-                    text: xAxisTitle,
-                  },
-                },
-                y: {
-                  title: {
-                    display: true,
-                    text: yAxisTitle,
-                  },
-                },
-              },
+          <ResponsiveBar
+            data={formattedData.map((d) => ({
+              ...d,
+              percentage: ((d.value / totalCount) * 100).toFixed(2) + "%",
+            }))}
+            margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
+            xScale={{ type: "band", padding: 0.2 }}
+            yScale={{
+              type: "linear",
+              min: "auto",
+              max: "auto",
+              stacked: true,
+              reverse: false,
             }}
+            axisTop={null}
+            axisRight={null}
+            axisBottom={{
+              tickSize: 5,
+              tickPadding: 5,
+              tickRotation: 0,
+              legend: title,
+              legendPosition: "middle",
+              legendOffset: 32,
+            }}
+            axisLeft={null}
+            colors={{ datum: "data.color" }}
+            labelTextColor={{ from: "color", modifiers: [["darker", 1.6]] }}
+            labelSkipWidth={12}
+            labelSkipHeight={12}
+            label={(d) => `${d.data.percentage}`}
+            role="application"
+            ariaLabel="Nivo bar chart demo"
+            barAriaLabel={(e) =>
+              `${e.id}: ${e.formattedValue} in country: ${e.indexValue}`
+            }
           />
         );
       case "donut":
         return (
-          <Pie
-            ref={chartRef}
-            data={chartData}
-            options={{
-              ...commonOptions,
-              cutout: "40%",
-            }}
+          <ResponsivePie
+            data={formattedData}
+            margin={{ top: 40, right: 80, bottom: 80, left: 80 }}
+            innerRadius={0.5}
+            padAngle={0.7}
+            cornerRadius={3}
+            colors={({ id, data }) => data.color}
+            borderWidth={1}
+            borderColor={{ from: "color", modifiers: [["darker", 0.2]] }}
+            radialLabelsSkipAngle={10}
+            radialLabelsTextColor="#333333"
+            radialLabelsLinkColor={{ from: "color" }}
+            sliceLabelsSkipAngle={10}
+            sliceLabelsTextColor="#333333"
+            sliceLabel={({ value }) => `${value}%`}
+            tooltip={({ datum }) => (
+              <div style={{ padding: 12, color: "#000", background: "#fff" }}>
+                <strong>{datum.label}</strong>: {datum.value}%
+              </div>
+            )}
           />
         );
       default:
@@ -160,20 +162,9 @@ export const GenerateChart = ({ data, text }) => {
     }
   };
 
-  const downloadChart = () => {
-    if (chartRef.current) {
-      const chart = chartRef.current;
-      const url = chart.toBase64Image();
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "chart.png";
-      link.click();
-    }
-  };
-
   return (
     <Box display="flex" flexDirection="column" alignItems="center">
-      <Box width="100%" maxWidth={800} maxHeight={600}>
+      <Box width="100%" maxWidth={800} height={600} ref={chartRef}>
         {renderChart()}
       </Box>
       <Stack direction="row" spacing={2} marginBottom={2} marginTop={3}>
@@ -191,20 +182,6 @@ export const GenerateChart = ({ data, text }) => {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
-        {chartType !== "donut" && (
-          <>
-            <TextField
-              label="X Axis Title"
-              value={xAxisTitle}
-              onChange={(e) => setXAxisTitle(e.target.value)}
-            />
-            <TextField
-              label="Y Axis Title"
-              value={yAxisTitle}
-              onChange={(e) => setYAxisTitle(e.target.value)}
-            />
-          </>
-        )}
         <Button variant="contained" onClick={downloadChart}>
           Download Chart as PNG
         </Button>
