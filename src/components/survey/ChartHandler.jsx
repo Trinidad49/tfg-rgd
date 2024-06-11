@@ -6,6 +6,7 @@ export const ChartHandler = ({ survey }) => {
   const [surveyData, setSurveyData] = useState(null);
   const [chartData, setChartData] = useState();
   const [currentTitle, setCurrentTitle] = useState();
+  const [optionalData, setOptionalData] = useState();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -60,7 +61,54 @@ export const ChartHandler = ({ survey }) => {
     }
   };
 
-  console.log("ChartData or CurrentTitle updated:", chartData, currentTitle);
+  const handleOptionalChange = (event, value) => {
+    if (value) {
+      const index = survey.questions.findIndex((q) => q.text === value.text);
+      if (index !== -1) {
+        const optionTexts = survey.questions[index].answers.map(
+          (answer) => answer.text
+        );
+
+        const auxData = chartData.map((item) => {
+          const options = optionTexts.reduce((acc, text) => {
+            acc[text] = 0;
+            return acc;
+          }, {});
+
+          return {
+            ...item,
+            options: options,
+          };
+        });
+
+        populateAuxData(
+          auxData,
+          currentTitle,
+          survey.questions[index].text,
+          surveyData
+        );
+        setOptionalData(auxData);
+      }
+    }
+  };
+
+  const populateAuxData = (auxData, title1, title2, newArray) => {
+    newArray.forEach((obj) => {
+      const answer1 = obj.answers.find(
+        (answer) => answer.text === title1
+      )?.answer;
+      const answer2 = obj.answers.find(
+        (answer) => answer.text === title2
+      )?.answer;
+
+      if (answer1 && answer2) {
+        const auxItem = auxData.find((item) => item.text === answer1);
+        if (auxItem && auxItem.options.hasOwnProperty(answer2)) {
+          auxItem.options[answer2] += 1;
+        }
+      }
+    });
+  };
 
   return (
     <>
@@ -73,7 +121,26 @@ export const ChartHandler = ({ survey }) => {
         )}
         style={{ width: "100%", marginTop: "20px", marginBottom: "20px" }}
       />
-      {chartData && <GenerateChart data={chartData} text={currentTitle} />}
+      <Autocomplete
+        options={survey.questions}
+        getOptionLabel={(option) => option.text}
+        onChange={handleOptionalChange}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label="Select Optional Question"
+            variant="outlined"
+          />
+        )}
+        style={{ width: "100%", marginTop: "20px", marginBottom: "20px" }}
+      />
+      {chartData && (
+        <GenerateChart
+          data={chartData}
+          text={currentTitle}
+          optional={optionalData}
+        />
+      )}
     </>
   );
 };

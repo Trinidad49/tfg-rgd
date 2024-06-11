@@ -19,7 +19,15 @@ const baseColorPalette = [
 
 const generateColor = (index) => `hsl(${index * 30}, 70%, 50%)`;
 
-export const GenerateChart = ({ text, data }) => {
+const getTextWidth = (text, font = "16px Arial") => {
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d");
+  context.font = font;
+  const metrics = context.measureText(text);
+  return metrics.width;
+};
+
+export const GenerateChart = ({ text, data, optional }) => {
   const [chartType, setChartType] = useState("bar");
   const [title, setTitle] = useState(text);
   const chartRef = useRef(null);
@@ -56,12 +64,17 @@ export const GenerateChart = ({ text, data }) => {
   const renderChart = () => {
     switch (chartType) {
       case "barh":
+        const longestLabelWidth = Math.max(
+          ...formattedData.map((d) => getTextWidth(d.id))
+        );
+        const leftMargin = longestLabelWidth + 20;
+
         return (
           <ResponsiveBar
             data={formattedData}
             keys={["value"]}
             indexBy="id"
-            margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
+            margin={{ top: 50, right: 130, bottom: 50, left: leftMargin }}
             padding={0.3}
             layout="horizontal"
             colors={({ id, data }) => data.color}
@@ -76,19 +89,56 @@ export const GenerateChart = ({ text, data }) => {
               legendPosition: "middle",
               legendOffset: 32,
             }}
-            axisLeft={{
-              tickSize: 5,
-              tickPadding: 5,
-              tickRotation: 0,
-              legend: "Answers",
-              legendPosition: "middle",
-              legendOffset: -40,
-            }}
             labelSkipWidth={12}
             labelSkipHeight={12}
             labelTextColor={{ from: "color", modifiers: [["darker", 1.6]] }}
           />
         );
+      case "stackedBar":
+        const keys = Object.keys(optional[0].options);
+
+        const totalValues = optional.map((data) => {
+          const total = keys.reduce((sum, key) => sum + data.options[key], 0);
+          return total;
+        });
+
+        const percentageData = optional.map((data, i) => {
+          const total = totalValues[i];
+          const percentageObject = {};
+          keys.forEach((key) => {
+            percentageObject[key] = (data.options[key] / total) * 100;
+          });
+          return {
+            category: data.text,
+            ...percentageObject,
+          };
+        });
+
+        return (
+          <ResponsiveBar
+            data={percentageData}
+            keys={keys}
+            indexBy="category"
+            margin={{ top: 50, right: 30, bottom: 50, left: 200 }}
+            padding={0.3}
+            layout="horizontal"
+            colors={{ scheme: "nivo" }}
+            borderColor={{ from: "color", modifiers: [["darker", 1.6]] }}
+            axisTop={null}
+            axisRight={null}
+            enableLabel={false}
+            axisBottom={{
+              tickSize: 5,
+              tickPadding: 5,
+              tickRotation: 0,
+              legend: "Percentage",
+              legendPosition: "middle",
+              legendOffset: 32,
+              format: (d) => `${d}%`,
+            }}
+          />
+        );
+
       case "bar":
         const totalCount = formattedData.reduce(
           (acc, data) => acc + data.value,
@@ -176,6 +226,7 @@ export const GenerateChart = ({ text, data }) => {
           <MenuItem value="barh">Horizontal Bar</MenuItem>
           <MenuItem value="bar">Bar</MenuItem>
           <MenuItem value="donut">Donut</MenuItem>
+          <MenuItem value="stackedBar">StackedBar</MenuItem>
         </Select>
         <TextField
           label="Chart Title"
