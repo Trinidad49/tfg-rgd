@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Box, Button, MenuItem, Select, Stack, TextField } from "@mui/material";
 import { ResponsiveBar } from "@nivo/bar";
 import { ResponsivePie } from "@nivo/pie";
@@ -28,9 +28,13 @@ const getTextWidth = (text, font = "16px Arial") => {
 };
 
 export const GenerateChart = ({ text, data, optional }) => {
-  const [chartType, setChartType] = useState("bar");
+  const [chartType, setChartType] = useState("barh");
   const [title, setTitle] = useState(text);
   const chartRef = useRef(null);
+
+  useEffect(() => {
+    setTitle(text);
+  }, [text]);
 
   const formattedData = data.map((d, i) => ({
     id: d.text,
@@ -85,7 +89,6 @@ export const GenerateChart = ({ text, data, optional }) => {
               tickSize: 5,
               tickPadding: 5,
               tickRotation: 0,
-              legend: "Count",
               legendPosition: "middle",
               legendOffset: 32,
             }}
@@ -119,7 +122,7 @@ export const GenerateChart = ({ text, data, optional }) => {
             data={percentageData}
             keys={keys}
             indexBy="category"
-            margin={{ top: 50, right: 30, bottom: 50, left: 200 }}
+            margin={{ top: 50, right: 130, bottom: 50, left: 200 }}
             padding={0.3}
             layout="horizontal"
             colors={{ scheme: "nivo" }}
@@ -136,6 +139,30 @@ export const GenerateChart = ({ text, data, optional }) => {
               legendOffset: 32,
               format: (d) => `${d}%`,
             }}
+            legends={[
+              {
+                dataFrom: "keys",
+                anchor: "bottom-right",
+                direction: "column",
+                justify: false,
+                translateX: 120,
+                translateY: 0,
+                itemsSpacing: 2,
+                itemWidth: 100,
+                itemHeight: 20,
+                itemDirection: "left-to-right",
+                itemOpacity: 0.85,
+                symbolSize: 20,
+                effects: [
+                  {
+                    on: "hover",
+                    style: {
+                      itemOpacity: 1,
+                    },
+                  },
+                ],
+              },
+            ]}
           />
         );
 
@@ -184,10 +211,21 @@ export const GenerateChart = ({ text, data, optional }) => {
           />
         );
       case "donut":
+        const totalCountD = formattedData.reduce(
+          (sum, item) => sum + item.value,
+          0
+        );
+
+        const percentageDataD = formattedData.map((item) => ({
+          ...item,
+          value: ((item.value / totalCountD) * 100).toFixed(2),
+        }));
+
         return (
           <ResponsivePie
-            data={formattedData}
-            margin={{ top: 40, right: 80, bottom: 80, left: 80 }}
+            data={percentageDataD}
+            arcLabel={(e) => e.value + "%"}
+            margin={{ top: 40, right: 100, bottom: 80, left: 100 }}
             innerRadius={0.5}
             padAngle={0.7}
             cornerRadius={3}

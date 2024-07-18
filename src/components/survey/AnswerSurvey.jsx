@@ -21,6 +21,7 @@ export const AnswerSurvey = ({ surveyID }) => {
   const [surveyData, setSurveyData] = useState(null);
   const [userAnswers, setUserAnswers] = useState([]);
   const [answerCheck, setAnswerCheck] = useState([]);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   useEffect(() => {
     const fetchSurveys = async () => {
@@ -73,7 +74,7 @@ export const AnswerSurvey = ({ surveyID }) => {
       })),
     };
 
-    //Check if mandatory questions have been answered
+    // Check if mandatory questions have been answered
     const updatedAnswerCheck = userAnswers.map((userAnswer, index) => {
       const isMandatory = surveyData.questions[index].mandatory;
       const isEmpty =
@@ -93,13 +94,31 @@ export const AnswerSurvey = ({ surveyID }) => {
         body: JSON.stringify(surveyWithAnswers),
       });
 
-      await response.json();
+      if (response.ok) {
+        setIsSubmitted(true);
+      } else {
+        console.error("Failed to save survey answers");
+      }
     }
-    //TODO: Once survey is saved, redirect to survey completed page
   };
 
   if (!surveyData) {
     return <div>Loading...</div>;
+  }
+
+  if (isSubmitted) {
+    return (
+      <Container maxWidth="sm">
+        <Paper style={{ backgroundColor: "white", margin: 10, padding: 30 }}>
+          <Typography variant="h4" align="center" gutterBottom>
+            Survey Submitted
+          </Typography>
+          <Typography variant="body1" align="center">
+            Thank you for completing the survey!
+          </Typography>
+        </Paper>
+      </Container>
+    );
   }
 
   return (
@@ -116,8 +135,8 @@ export const AnswerSurvey = ({ surveyID }) => {
         </div>
         <Divider style={{ marginBottom: 20, marginTop: 10 }} />
         {surveyData.questions.map((question, index) => (
-          <Card variant="outlined" style={{ marginBottom: "16px" }}>
-            <CardContent key={index}>
+          <Card variant="outlined" style={{ marginBottom: "16px" }} key={index}>
+            <CardContent>
               <Typography variant="h5" style={{ marginBottom: 10 }}>
                 {question.text}
                 {question.mandatory && <span style={{ color: "red" }}> *</span>}
