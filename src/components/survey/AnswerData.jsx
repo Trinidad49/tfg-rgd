@@ -47,6 +47,7 @@ export const AnswerData = ({ survey }) => {
           (a) => a.answers[questionIndex]?.answer === optionText
         ).length;
 
+  console.log(surveyData.length);
   return (
     <Paper style={{ backgroundColor: "white", margin: 10, padding: 30 }}>
       <div
@@ -56,7 +57,12 @@ export const AnswerData = ({ survey }) => {
           alignItems: "center",
         }}
       >
-        <Typography variant="h4">{survey.title}</Typography>
+        <div>
+          <Typography variant="h4">{survey.title}</Typography>
+          <Typography variant="h6">
+            Total of answers:{surveyData.length}
+          </Typography>
+        </div>
         <GenerateCSV survey={survey} surveyData={surveyData} />
       </div>
       <Divider style={{ marginBottom: 20, marginTop: 10 }} />

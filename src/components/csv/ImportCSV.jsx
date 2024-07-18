@@ -2,12 +2,37 @@ import { Box, Button, Stack, Typography } from "@mui/material";
 import React, { useState } from "react";
 import PublishIcon from "@mui/icons-material/Publish";
 
-export const ImportCSV = ({ onImport }) => {
+export const ImportCSV = () => {
   const [csvData, setCSVData] = useState(null);
   const [fileName, setFileName] = useState("");
+  const [isDragging, setIsDragging] = useState(false);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
+    setFileName(file.name);
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      const contents = e.target.result;
+      setCSVData(contents);
+    };
+
+    reader.readAsText(file);
+  };
+
+  const handleDragOver = (event) => {
+    event.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleDrop = (event) => {
+    event.preventDefault();
+    setIsDragging(false);
+    const file = event.dataTransfer.files[0];
     setFileName(file.name);
     const reader = new FileReader();
 
@@ -165,8 +190,14 @@ export const ImportCSV = ({ onImport }) => {
           height="200px"
           border="2px dashed #aaa"
           borderRadius="8px"
-          htmlFor="fileInput"
-          style={{ cursor: "pointer" }}
+          style={{
+            cursor: "pointer",
+            backgroundColor: isDragging ? "#f0f0f0" : "transparent",
+          }}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          onClick={() => document.getElementById("fileInput").click()}
         >
           <PublishIcon fontSize="large" style={{ transform: "scale(1.8)" }} />
           <Typography variant="body1" style={{ marginTop: "15px" }}>
@@ -175,17 +206,13 @@ export const ImportCSV = ({ onImport }) => {
         </Box>
         <Stack direction="row" spacing={2}>
           <Typography variant="h6">
-            {fileName === "" ? (
-              <>No file currently selected</>
-            ) : (
-              <>{fileName}</>
-            )}
+            {fileName === "" ? "No file currently selected" : fileName}
           </Typography>
-
           <Button
             style={{ maxWidth: 200 }}
             variant="contained"
             onClick={handleImport}
+            disabled={!csvData}
           >
             Import CSV
           </Button>
