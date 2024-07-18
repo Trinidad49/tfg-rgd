@@ -1,4 +1,4 @@
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { Box, Button, Snackbar, Stack, Typography } from "@mui/material";
 import React, { useState } from "react";
 import PublishIcon from "@mui/icons-material/Publish";
 
@@ -6,6 +6,7 @@ export const ImportCSV = () => {
   const [csvData, setCSVData] = useState(null);
   const [fileName, setFileName] = useState("");
   const [isDragging, setIsDragging] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -161,7 +162,14 @@ export const ImportCSV = () => {
         body: JSON.stringify(surveyWithAnswers),
       });
     });
-    //onImport(csvData);
+
+    setSnackbarOpen(true);
+    setCSVData(null);
+    setFileName("");
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
   };
 
   return (
@@ -218,6 +226,12 @@ export const ImportCSV = () => {
           </Button>
         </Stack>
       </Stack>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        message={"Survey Imported!"}
+      />
     </div>
   );
 };
