@@ -8,6 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import { GenerateCSV } from "../csv/GenerateCSV";
+const backUrl = process.env.REACT_APP_BACK
 
 export const AnswerData = ({ survey }) => {
   const [surveyData, setSurveyData] = useState(null);
@@ -15,7 +16,7 @@ export const AnswerData = ({ survey }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:3080/answers", {
+        const response = await fetch(backUrl+"/answers", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

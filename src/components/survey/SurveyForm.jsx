@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import { Question } from "./Question";
+const backUrl = process.env.REACT_APP_BACK
 
 export const SurveyForm = ({ survey }) => {
   const [title, setTitle] = useState("");
@@ -68,7 +69,7 @@ export const SurveyForm = ({ survey }) => {
       if (id !== "") {
         sendData._id = id;
       }
-      const response = await fetch("http://localhost:3080/surveys", {
+      const response = await fetch(backUrl+"/surveys", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

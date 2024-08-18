@@ -1,6 +1,7 @@
 import { Box, Button, Snackbar, Stack, Typography } from "@mui/material";
 import React, { useState } from "react";
 import PublishIcon from "@mui/icons-material/Publish";
+const backUrl = process.env.REACT_APP_BACK
 
 export const ImportCSV = () => {
   const [csvData, setCSVData] = useState(null);
@@ -137,7 +138,7 @@ export const ImportCSV = () => {
     const { answers, survey } = formatCSVData(csvData);
 
     //Post survey and get id
-    const response = await fetch("http://localhost:3080/surveys", {
+    const response = await fetch(backUrl+"/surveys", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -154,7 +155,7 @@ export const ImportCSV = () => {
         questions: a,
       };
 
-      await fetch("http://localhost:3080/answer", {
+      await fetch(backUrl+"/answer", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

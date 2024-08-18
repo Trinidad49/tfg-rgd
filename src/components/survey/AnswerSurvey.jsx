@@ -16,6 +16,7 @@ import {
   Stack,
   Box,
 } from "@mui/material";
+const backUrl = process.env.REACT_APP_BACK
 
 export const AnswerSurvey = ({ surveyID }) => {
   const [surveyData, setSurveyData] = useState(null);
@@ -26,7 +27,7 @@ export const AnswerSurvey = ({ surveyID }) => {
   useEffect(() => {
     const fetchSurveys = async () => {
       try {
-        const response = await fetch("http://localhost:3080/survey", {
+        const response = await fetch(backUrl+"/survey", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -86,7 +87,7 @@ export const AnswerSurvey = ({ surveyID }) => {
 
     if (!updatedAnswerCheck.includes(true)) {
       // Save survey answer
-      const response = await fetch("http://localhost:3080/answer", {
+      const response = await fetch(backUrl+"/answer", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -1,6 +1,7 @@
 import { Autocomplete, TextField, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { GenerateChart } from "./GenerateChart";
+const backUrl = process.env.REACT_APP_BACK
 
 export const ChartHandler = ({ survey }) => {
   const [surveyData, setSurveyData] = useState(null);
@@ -11,7 +12,7 @@ export const ChartHandler = ({ survey }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:3080/answers", {
+        const response = await fetch(backUrl+"/answers", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

@@ -1,6 +1,7 @@
 import { Autocomplete, TextField } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { ChartHandler } from "./ChartHandler";
+const backUrl = process.env.REACT_APP_BACK
 
 export const ChartMenu = () => {
   const [surveys, setSurveys] = useState([]);
@@ -9,7 +10,7 @@ export const ChartMenu = () => {
   const fetchSurveys = async () => {
     try {
       const userID = localStorage.getItem("userID");
-      const response = await fetch("http://localhost:3080/surveys", {
+      const response = await fetch(backUrl+"/surveys", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

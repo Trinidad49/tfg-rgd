@@ -9,6 +9,7 @@ import {
   Stack,
   Divider,
 } from "@mui/material";
+const backUrl = process.env.REACT_APP_BACK
 
 export const LoginForm = ({ onLogin }) => {
   const [email, setEmail] = useState("");
@@ -19,7 +20,7 @@ export const LoginForm = ({ onLogin }) => {
   // Log in a user using email and password
   const logIn = async (email, password) => {
     try {
-      const response = await fetch("http://localhost:3080/login", {
+      const response = await fetch(backUrl+"/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

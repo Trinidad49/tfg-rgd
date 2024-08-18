@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+const backUrl = process.env.REACT_APP_BACK
 
 export const RegisterForm = ({ onRegister }) => {
   const [email, setEmail] = useState("");
@@ -19,7 +20,7 @@ export const RegisterForm = ({ onRegister }) => {
   const navigate = useNavigate();
   const register = async (email, password) => {
     try {
-      const response = await fetch("http://localhost:3080/register", {
+      const response = await fetch(backUrl+"/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

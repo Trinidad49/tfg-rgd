@@ -22,6 +22,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import React, { useState, useEffect } from "react";
 import { SurveyMenu } from "./SurveyMenu";
 import { format } from "date-fns";
+const backUrl = process.env.REACT_APP_BACK
 
 export const SurveyList = () => {
   const [surveys, setSurveys] = useState([]);
@@ -37,7 +38,7 @@ export const SurveyList = () => {
   const fetchSurveys = async () => {
     try {
       const userID = localStorage.getItem("userID");
-      const response = await fetch("http://localhost:3080/surveys", {
+      const response = await fetch(backUrl+"/surveys", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -83,7 +84,7 @@ export const SurveyList = () => {
 
   const handleDeleteSurvey = () => {
     // Delete the survey
-    fetch("http://localhost:3080/surveys", {
+    fetch(backUrl+"/surveys", {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
