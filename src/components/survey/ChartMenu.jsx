@@ -1,6 +1,6 @@
 import { Autocomplete, TextField } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { ChartHandler } from "./ChartHandler";
+import ChartHandlerView from "./ChartHandlerView";
 const backUrl = process.env.REACT_APP_BACK
 
 export const ChartMenu = () => {
@@ -51,7 +51,7 @@ export const ChartMenu = () => {
         style={{ width: "100%", marginTop: "20px" }}
       />
       {selectedSurvey && (
-        <ChartHandler survey={surveys.find((e) => e._id === selectedSurvey)} />
+        <ChartHandlerView survey={surveys.find((e) => e._id === selectedSurvey)} />
       )}
     </>
   );
