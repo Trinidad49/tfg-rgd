@@ -2,8 +2,11 @@ import React from "react";
 import { Typography } from "@mui/material";
 import { ResponsiveBar } from "@nivo/bar";
 import { ResponsivePie } from "@nivo/pie";
-import { formatHorizontalBarData, formatStackedBarData, formatDonutData } from "./chartUtils";
-
+import { formatHorizontalBarData, formatStackedBarData, formatDonutData, formatGroupedBarData } from "./chartUtils";
+const baseColorPalette = [
+    "#4e79a7", "#f28e2b", "#e15759", "#76b7b2", "#59a14f",
+    "#edc949", "#af7aa1", "#ff9da7", "#9c755f", "#bab0ac",
+  ];
 export const ChartRenderer = ({ type, data, optional, title }) => {
   switch (type) {
     case "barh": {
@@ -24,6 +27,81 @@ export const ChartRenderer = ({ type, data, optional, title }) => {
           labelSkipWidth={12}
           labelSkipHeight={12}
           labelTextColor={{ from: "color", modifiers: [["darker", 1.6]] }}
+        />
+      );
+    }
+    case "bar": {
+      const totalCount = data.reduce((acc, d) => acc + d.count, 0);
+      const chartData = data.map((d, i) => ({
+        id: d.text,
+        label: d.text,
+        value: d.count,
+        percentage: ((d.count / totalCount) * 100).toFixed(2) + "%",
+        color: baseColorPalette[i % baseColorPalette.length],
+      }));
+      return (
+        <ResponsiveBar
+          data={chartData}
+          keys={["value"]}
+          indexBy="id"
+          margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
+          padding={0.3}
+          colors={({ id, data }) => data.color}
+          borderColor={{ from: "color", modifiers: [["darker", 1.6]] }}
+          axisBottom={{
+            legend: title,
+            legendPosition: "middle",
+            legendOffset: 32,
+          }}
+          labelSkipWidth={12}
+          labelSkipHeight={12}
+          labelTextColor={{ from: "color", modifiers: [["darker", 1.6]] }}
+          label={(d) => d.data.percentage}
+        />
+      );
+    }
+    case "groupedBar": {
+      if (!optional || optional.length === 0 || !optional[0].options) {
+        return <Typography color="error">Please select an optional question to render a grouped bar chart.</Typography>;
+      }
+
+      const groupedData = optional.map((item) => ({
+        group: item.text,
+        values: item.options,
+      }));
+
+      const { formattedData, keys } = formatGroupedBarData(groupedData);
+
+      return (
+        <ResponsiveBar
+          data={formattedData}
+          keys={keys}
+          indexBy="group"
+          margin={{ top: 50, right: 130, bottom: 50, left: 80 }}
+          padding={0.3}
+          groupMode="grouped"
+          colors={{ scheme: "category10" }}
+          borderColor={{ from: "color", modifiers: [["darker", 1.6]] }}
+          axisBottom={{
+            legend: title,
+            legendPosition: "middle",
+            legendOffset: 32,
+          }}
+          labelSkipWidth={12}
+          labelSkipHeight={12}
+          labelTextColor={{ from: "color", modifiers: [["darker", 1.6]] }}
+          legends={[
+            {
+              dataFrom: "keys",
+              anchor: "bottom-right",
+              direction: "column",
+              translateX: 120,
+              itemWidth: 100,
+              itemHeight: 20,
+              itemsSpacing: 2,
+              symbolSize: 20,
+            },
+          ]}
         />
       );
     }
@@ -67,30 +145,7 @@ export const ChartRenderer = ({ type, data, optional, title }) => {
         />
       );
     }
-    case "bar": {
-      const totalCount = data.reduce((acc, d) => acc + d.count, 0);
-      const chartData = data.map((d) => ({
-        ...d,
-        percentage: ((d.count / totalCount) * 100).toFixed(2) + "%",
-      }));
-      return (
-        <ResponsiveBar
-          data={chartData}
-          keys={["count"]}
-          indexBy="text"
-          margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
-          padding={0.3}
-          colors={{ datum: "data.color" }}
-          axisBottom={{
-            legend: title,
-            legendPosition: "middle",
-            legendOffset: 32,
-          }}
-          labelTextColor={{ from: "color", modifiers: [["darker", 1.6]] }}
-          label={(d) => d.data.percentage}
-        />
-      );
-    }
+
     case "donut": {
       const pieData = formatDonutData(data);
       return (

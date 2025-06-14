@@ -22,6 +22,19 @@ const baseColorPalette = [
     const longestLabelWidth = Math.max(...formattedData.map((d) => getTextWidth(d.id)));
     return { formattedData, leftMargin: longestLabelWidth + 20 };
   };
+
+  export const formatGroupedBarData = (groupedData) => {
+  const keys = Object.keys(groupedData[0].values);
+  const formattedData = groupedData.map((item, i) => {
+    const entry = { group: item.group };
+    keys.forEach((key, idx) => {
+      entry[key] = item.values[key];
+    });
+    entry.color = baseColorPalette[i % baseColorPalette.length];
+    return entry;
+  });
+  return { formattedData, keys };
+};
   
   export const formatStackedBarData = (optional) => {
     const keys = Object.keys(optional[0].options);
