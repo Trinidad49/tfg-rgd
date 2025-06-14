@@ -1,5 +1,5 @@
 import { Autocomplete, TextField, Typography } from "@mui/material";
-import {GenerateChart} from "../charts/GenerateChart.jsx";
+import { GenerateChart } from "../charts/GenerateChart.jsx";
 import useChartViewModel from "../../viewmodels/useChartViewModel.js";
 
 function ChartHandlerView({ survey }) {
@@ -20,7 +20,7 @@ function ChartHandlerView({ survey }) {
       <Autocomplete
         options={questions}
         getOptionLabel={(o) => o.text}
-        onChange={(_, value) => handleQuestionChange(value)}
+        onChange={(_, value) => value && handleQuestionChange(value)}
         renderInput={(params) => (
           <TextField {...params} label="Select Question" variant="outlined" />
         )}
@@ -30,7 +30,7 @@ function ChartHandlerView({ survey }) {
       <Autocomplete
         options={questions}
         getOptionLabel={(o) => o.text}
-        onChange={(_, value) => handleOptionalChange(value)}
+        onChange={(_, value) => value && handleOptionalChange(value)}
         renderInput={(params) => (
           <TextField
             {...params}

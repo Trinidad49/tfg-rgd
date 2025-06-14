@@ -31,7 +31,7 @@ export const GenerateChart = ({ text, data, optional }) => {
   const handleCSVDownload = () => {
     const rows = [];
   
-    if (optional && chartType === "stackedBar") {
+    if (optional && (chartType === "stackedBar" || chartType === "groupedBar")) {
       // Handle optional/stacked data
       const keys = Object.keys(optional[0].options);
       rows.push(["Category", ...keys]);
