@@ -15,8 +15,11 @@ import {
   Card,
   Stack,
   Box,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
-const backUrl = process.env.REACT_APP_BACK
+
+const backUrl = process.env.REACT_APP_BACK;
 
 export const AnswerSurvey = ({ surveyID }) => {
   const [surveyData, setSurveyData] = useState(null);
@@ -24,26 +27,26 @@ export const AnswerSurvey = ({ surveyID }) => {
   const [answerCheck, setAnswerCheck] = useState([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   useEffect(() => {
     const fetchSurveys = async () => {
       try {
-        const response = await fetch(backUrl+"/survey", {
+        const response = await fetch(`${backUrl}/survey`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
             surveyid: surveyID,
           },
         });
-        if (!response.ok) {
-          throw new Error("Failed to fetch surveys");
-        }
+        if (!response.ok) throw new Error("Failed to fetch surveys");
         const data = await response.json();
         if (data.length > 0) {
           setSurveyData(data[0]);
-          // Initialize userAnswers state with empty answers for each question
           setUserAnswers(
-            data[0].questions.map((question) => ({
-              answer: question.type === "checkbox" ? [] : "",
+            data[0].questions.map((q) => ({
+              answer: q.type === "checkbox" ? [] : "",
             }))
           );
           setAnswerCheck(
@@ -57,61 +60,50 @@ export const AnswerSurvey = ({ surveyID }) => {
     fetchSurveys();
   }, [surveyID]);
 
-  const handleAnswerChange = (questionIndex, answer) => {
-    setUserAnswers((prevUserAnswers) => {
-      const updatedAnswers = [...prevUserAnswers];
-      updatedAnswers[questionIndex] = { answer };
-      return updatedAnswers;
+  const handleAnswerChange = (index, answer) => {
+    setUserAnswers((prev) => {
+      const updated = [...prev];
+      updated[index] = { answer };
+      return updated;
     });
   };
 
   const handleSaveAnswers = async () => {
-    // Combine survey ID with user answers
     const surveyWithAnswers = {
       surveyID,
-      questions: surveyData.questions.map((question, index) => ({
-        text: question.text,
-        answer: userAnswers[index].answer,
+      questions: surveyData.questions.map((q, i) => ({
+        text: q.text,
+        answer: userAnswers[i].answer,
       })),
     };
 
-    // Check if mandatory questions have been answered
-    const updatedAnswerCheck = userAnswers.map((userAnswer, index) => {
-      const isMandatory = surveyData.questions[index].mandatory;
+    const updatedCheck = userAnswers.map((a, i) => {
+      const isMandatory = surveyData.questions[i].mandatory;
       const isEmpty =
-        userAnswer.answer.length === 0 ||
-        (Array.isArray(userAnswer.answer) && userAnswer.answer.length === 0);
+        a.answer.length === 0 ||
+        (Array.isArray(a.answer) && a.answer.length === 0);
       return isMandatory && isEmpty;
     });
-    setAnswerCheck(updatedAnswerCheck);
+    setAnswerCheck(updatedCheck);
 
-    if (!updatedAnswerCheck.includes(true)) {
-      // Save survey answer
-      const response = await fetch(backUrl+"/answer", {
+    if (!updatedCheck.includes(true)) {
+      const res = await fetch(`${backUrl}/answer`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(surveyWithAnswers),
       });
-
-      if (response.ok) {
-        setIsSubmitted(true);
-      } else {
-        console.error("Failed to save survey answers");
-      }
+      if (res.ok) setIsSubmitted(true);
+      else console.error("Failed to save survey answers");
     }
   };
 
-  if (!surveyData) {
-    return <div>Loading...</div>;
-  }
+  if (!surveyData) return <div>Loading...</div>;
 
   if (isSubmitted) {
     return (
       <Container maxWidth="sm">
-        <Paper style={{ backgroundColor: "white", margin: 10, padding: 30 }}>
-          <Typography variant="h4" align="center" gutterBottom>
+        <Paper sx={{ backgroundColor: "white", m: 1, p: isMobile ? 2 : 4 }}>
+          <Typography variant={isMobile ? "h5" : "h4"} align="center" gutterBottom>
             Survey Submitted
           </Typography>
           <Typography variant="body1" align="center">
@@ -124,30 +116,24 @@ export const AnswerSurvey = ({ surveyID }) => {
 
   return (
     <Container maxWidth="lg">
-      <Paper style={{ backgroundColor: "white", margin: 10, padding: 30 }}>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Typography variant="h3">{surveyData.title}</Typography>
-        </div>
-        <Divider style={{ marginBottom: 20, marginTop: 10 }} />
+      <Paper sx={{ backgroundColor: "white", m: 1, p: isMobile ? 2 : 4 }}>
+        <Typography variant={isMobile ? "h4" : "h3"} gutterBottom>
+          {surveyData.title}
+        </Typography>
+        <Divider sx={{ my: 2 }} />
         {surveyData.questions.map((question, index) => (
-          <Card variant="outlined" style={{ marginBottom: "16px" }} key={index}>
+          <Card key={index} variant="outlined" sx={{ mb: 2 }}>
             <CardContent>
-              <Typography variant="h5" style={{ marginBottom: 10 }}>
+              <Typography variant={isMobile ? "h6" : "h5"} sx={{ mb: 1 }}>
                 {question.text}
                 {question.mandatory && <span style={{ color: "red" }}> *</span>}
                 {answerCheck[index] && (
-                  <span style={{ color: "red", fontSize: 17 }}>
-                    {" "}
-                    You must answer this question
+                  <span style={{ color: "red", fontSize: 14 }}>
+                    {" "}You must answer this question
                   </span>
                 )}
               </Typography>
+
               {question.type === "text" ? (
                 <TextField
                   placeholder="Answer"
@@ -160,46 +146,36 @@ export const AnswerSurvey = ({ surveyID }) => {
                 />
               ) : question.type === "multipleChoice" ? (
                 <RadioGroup
-                  aria-label="quiz"
-                  name="quiz"
                   value={userAnswers[index].answer}
                   onChange={(e) => handleAnswerChange(index, e.target.value)}
                 >
-                  <Grid container>
-                    {question.answers.map((option, optionIndex) => (
-                      <Grid item xs={6} key={optionIndex}>
+                  <Grid container spacing={1}>
+                    {question.answers.map((option, i) => (
+                      <Grid item xs={12} sm={6} key={i}>
                         <FormControlLabel
                           value={option.text}
                           control={<Radio />}
-                          label={option.text}
+                          label={<Typography variant="body2">{option.text}</Typography>}
                         />
                       </Grid>
                     ))}
                   </Grid>
                 </RadioGroup>
               ) : question.type === "linear" ? (
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  style={{ marginLeft: 100 }}
-                >
+                <Box display="flex" justifyContent="center">
                   <RadioGroup
-                    aria-label="quiz"
-                    name="quiz"
                     value={userAnswers[index].answer}
                     onChange={(e) => handleAnswerChange(index, e.target.value)}
                   >
-                    <Grid container spacing={3}>
-                      {question.answers.map((option, optionIndex) => (
-                        <Grid item xs={1} key={optionIndex}>
-                          <Stack alignContent="center">
-                            <Typography style={{ marginLeft: 5 }}>
-                              {option.text}
-                            </Typography>
+                    <Grid container spacing={1}>
+                      {question.answers.map((option, i) => (
+                        <Grid item xs={2} sm={1} key={i}>
+                          <Stack alignItems="center">
+                            <Typography variant="body2">{option.text}</Typography>
                             <FormControlLabel
                               value={option.text}
                               control={<Radio />}
+                              label=""
                             />
                           </Stack>
                         </Grid>
@@ -208,34 +184,26 @@ export const AnswerSurvey = ({ surveyID }) => {
                   </RadioGroup>
                 </Box>
               ) : (
-                <Grid container>
-                  {question.answers.map((option, optionIndex) => (
-                    <Grid item xs={6} key={optionIndex}>
+                <Grid container spacing={1}>
+                  {question.answers.map((option, i) => (
+                    <Grid item xs={12} sm={6} key={i}>
                       <FormControlLabel
                         control={
                           <Checkbox
-                            checked={userAnswers[index].answer.includes(
-                              option.text
-                            )}
+                            checked={userAnswers[index].answer.includes(option.text)}
                             onChange={(e) => {
                               const checked = e.target.checked;
-                              const updatedAnswers =
-                                userAnswers[index].answer.slice(); // Create a copy
-                              if (checked) {
-                                updatedAnswers.push(option.text);
-                              } else {
-                                const index = updatedAnswers.indexOf(
-                                  option.text
-                                );
-                                if (index > -1) {
-                                  updatedAnswers.splice(index, 1);
-                                }
+                              const updated = [...userAnswers[index].answer];
+                              if (checked) updated.push(option.text);
+                              else {
+                                const idx = updated.indexOf(option.text);
+                                if (idx > -1) updated.splice(idx, 1);
                               }
-                              handleAnswerChange(index, updatedAnswers);
+                              handleAnswerChange(index, updated);
                             }}
                           />
                         }
-                        label={option.text}
+                        label={<Typography variant="body2">{option.text}</Typography>}
                       />
                     </Grid>
                   ))}
@@ -244,7 +212,7 @@ export const AnswerSurvey = ({ surveyID }) => {
             </CardContent>
           </Card>
         ))}
-        <Button variant="contained" onClick={handleSaveAnswers}>
+        <Button variant="contained" onClick={handleSaveAnswers} size={isMobile ? "small" : "medium"}>
           Save Answers
         </Button>
       </Paper>
