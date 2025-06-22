@@ -28,6 +28,7 @@ export const GenerateChart = ({ text, data, optional, chartType, setChartType })
   };
 
   const handleCSVDownload = () => {
+    const BOM = "\uFEFF"; // UTF-8 BOM
     const rows = [];
 
     if (optional && (chartType === "stackedBar" || chartType === "groupedBar")) {
@@ -48,7 +49,16 @@ export const GenerateChart = ({ text, data, optional, chartType, setChartType })
       });
     }
 
-    const csvContent = rows.map((row) => row.join(",")).join("\n");
+    // Proper escaping
+    const escapeCSV = (value) => {
+      if (value == null) return "";
+      const str = value.toString();
+      return `"${str.replace(/"/g, '""')}"`;
+    };
+
+    const delimiter = ";"; // Use semicolon for Excel compatibility
+    const csvContent = BOM + rows.map(row => row.map(escapeCSV).join(delimiter)).join("\n");
+
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);

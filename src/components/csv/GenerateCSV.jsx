@@ -2,31 +2,35 @@ import { Button } from "@mui/material";
 import React from "react";
 
 export const GenerateCSV = ({ survey, surveyData }) => {
-  const questions = survey.questions.map((a) => a.text);
-  const answers = [];
-  surveyData.map((data, index) =>
-    answers.push(
-      data.answers.map((a) =>
-        Array.isArray(a.text) ? a.answer.join(",") : a.answer
-      )
+  const questions = survey.questions.map((q) => q.text);
+
+  const answers = surveyData.map((data) =>
+    data.answers.map((a) =>
+      Array.isArray(a.text)
+        ? a.answer.join(", ")
+        : a.answer
     )
   );
+
+  const escapeCSV = (value) => {
+    if (value == null) return "";
+    const str = value.toString();
+    return `"${str.replace(/"/g, '""')}"`;
+  };
+
   const formatCSV = (questions, answers) => {
-    let csv = questions.join(",") + "\n";
+    const delimiter = ";";
+    const BOM = "\uFEFF";
 
-    answers.forEach((answer) => {
-      const answerRow = answer.map((value) => `"${value}"`).join(",");
-      csv += answerRow + "\n";
-    });
+    const header = questions.map(escapeCSV).join(delimiter);
+    const rows = answers.map((row) => row.map(escapeCSV).join(delimiter));
 
-    return csv;
+    return BOM + [header, ...rows].join("\n");
   };
 
   const handleDownloadCSV = () => {
     const csvContent = formatCSV(questions, answers);
-
-    const blob = new Blob([csvContent], { type: "text/csv" });
-
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = window.URL.createObjectURL(blob);
 
     const link = document.createElement("a");
