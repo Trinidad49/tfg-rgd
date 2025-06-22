@@ -16,7 +16,7 @@ import {
   ListItemText,
 } from "@mui/material";
 import { ImportCSV } from "../csv/ImportCSV";
-import { ChartMenu } from "./ChartMenu";
+import { AnalisisMenu } from "./AnalisisMenu";
 
 export const Dashboard = ({ onLogin }) => {
   const [selectedOption, setSelectedOption] = useState("Surveys");
@@ -29,7 +29,7 @@ export const Dashboard = ({ onLogin }) => {
     <Container maxWidth="lg" style={{ paddingTop: 20 }}>
       <Drawer variant="permanent" anchor="left">
         <List>
-          {["New Survey", "Surveys", "Graphic", "Import"].map((option) => (
+          {["New Survey", "Surveys", "Analisis", "Import"].map((option) => (
             <ListItemButton
               key={option}
               onClick={() => handleOptionClick(option)}
@@ -42,7 +42,7 @@ export const Dashboard = ({ onLogin }) => {
                 <PollIcon />
               ) : option === "Import" ? (
                 <ImportExportIcon />
-              ) : option === "Graphic" ? (
+              ) : option === "Analisis" ? (
                 <QueryStatsIcon />
               ) : (
                 <AddIcon />
@@ -70,7 +70,7 @@ export const Dashboard = ({ onLogin }) => {
           {selectedOption === "Surveys" && <SurveyList />}
           {selectedOption === "New Survey" && <SurveyForm />}
           {selectedOption === "Import" && <ImportCSV />}
-          {selectedOption === "Graphic" && <ChartMenu />}
+          {selectedOption === "Analisis" && <AnalisisMenu />}
         </Grid>
       </Grid>
     </Container>

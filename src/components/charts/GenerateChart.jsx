@@ -4,8 +4,7 @@ import { toPng } from "html-to-image";
 import { ChartRenderer } from "./ChartRenderer";
 import { ChartControls } from "./ChartControls";
 
-export const GenerateChart = ({ text, data, optional }) => {
-  const [chartType, setChartType] = useState("barh");
+export const GenerateChart = ({ text, data, optional, chartType, setChartType }) => {
   const [title, setTitle] = useState(text);
   const chartRef = useRef(null);
 
@@ -30,12 +29,11 @@ export const GenerateChart = ({ text, data, optional }) => {
 
   const handleCSVDownload = () => {
     const rows = [];
-  
+
     if (optional && (chartType === "stackedBar" || chartType === "groupedBar")) {
-      // Handle optional/stacked data
       const keys = Object.keys(optional[0].options);
       rows.push(["Category", ...keys]);
-  
+
       optional.forEach((item) => {
         const row = [item.text];
         keys.forEach((key) => {
@@ -43,15 +41,13 @@ export const GenerateChart = ({ text, data, optional }) => {
         });
         rows.push(row);
       });
-  
     } else {
-      // Standard chart data
       rows.push(["Answer", "Count"]);
       data.forEach((item) => {
         rows.push([item.text, item.count]);
       });
     }
-  
+
     const csvContent = rows.map((row) => row.join(",")).join("\n");
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
@@ -65,7 +61,12 @@ export const GenerateChart = ({ text, data, optional }) => {
   return (
     <Box display="flex" flexDirection="column" alignItems="center">
       <Box width="100%" maxWidth={800} height={600} ref={chartRef}>
-        <ChartRenderer type={chartType} data={data} optional={optional} title={title} />
+        <ChartRenderer
+          type={chartType}
+          data={data}
+          optional={optional}
+          title={title}
+        />
       </Box>
       <ChartControls
         chartType={chartType}

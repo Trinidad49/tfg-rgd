@@ -51,7 +51,7 @@ export const ChartMenu = () => {
         style={{ width: "100%", marginTop: "20px" }}
       />
       {selectedSurvey && (
-        <ChartHandlerView survey={surveys.find((e) => e._id === selectedSurvey)} />
+        <ChartHandlerView key={selectedSurvey} survey={surveys.find((e) => e._id === selectedSurvey)} />
       )}
     </>
   );
