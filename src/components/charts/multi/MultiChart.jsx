@@ -3,6 +3,7 @@ import { Box } from "@mui/material";
 import { toPng } from "html-to-image";
 import { MultiRenderer } from "./MultiRenderer";
 import { MultiControls } from "./MultiControls";
+import { TableData } from "./TableData";
 
 export const MultiChart = ({ dataA, dataB, chartType, surveyATitle, surveyBTitle }) => {
   const chartRef = useRef(null);
@@ -40,7 +41,7 @@ export const MultiChart = ({ dataA, dataB, chartType, surveyATitle, surveyBTitle
 
   const handleCSVDownload = () => {
     const BOM = "\uFEFF";
-    const rows = [["Label", "Survey A", "Survey B"]];
+    const rows = [["Label", surveyATitle, surveyBTitle]];
 
     mergedData.forEach(row => {
       rows.push([row.text, row.A, row.B]);
@@ -75,12 +76,18 @@ export const MultiChart = ({ dataA, dataB, chartType, surveyATitle, surveyBTitle
           surveyBTitle={surveyBTitle}
         />
       </Box>
+
       <MultiControls
         chartType="groupedBar"
         title={title}
         onTitleChange={(e) => setTitle(e.target.value)}
         onDownload={handleDownload}
         downloadChart={handleCSVDownload}
+      />
+      <TableData
+        data={mergedData}
+        surveyATitle={surveyATitle}
+        surveyBTitle={surveyBTitle}
       />
     </Box>
   );

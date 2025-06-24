@@ -3,6 +3,7 @@ import { Box } from "@mui/material";
 import { toPng } from "html-to-image";
 import { ChartRenderer } from "./ChartRenderer";
 import { ChartControls } from "./ChartControls";
+import { ChartTable } from "./ChartTable";
 
 export const GenerateChart = ({ text, data, optional, chartType, setChartType }) => {
   const [title, setTitle] = useState(text);
@@ -28,7 +29,7 @@ export const GenerateChart = ({ text, data, optional, chartType, setChartType })
   };
 
   const handleCSVDownload = () => {
-    const BOM = "\uFEFF"; // UTF-8 BOM
+    const BOM = "\uFEFF";
     const rows = [];
 
     if (optional && (chartType === "stackedBar" || chartType === "groupedBar")) {
@@ -49,14 +50,13 @@ export const GenerateChart = ({ text, data, optional, chartType, setChartType })
       });
     }
 
-    // Proper escaping
     const escapeCSV = (value) => {
       if (value == null) return "";
       const str = value.toString();
       return `"${str.replace(/"/g, '""')}"`;
     };
 
-    const delimiter = ";"; // Use semicolon for Excel compatibility
+    const delimiter = ";";
     const csvContent = BOM + rows.map(row => row.map(escapeCSV).join(delimiter)).join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -86,6 +86,7 @@ export const GenerateChart = ({ text, data, optional, chartType, setChartType })
         onDownload={handleDownload}
         downloadChart={handleCSVDownload}
       />
+      <ChartTable data={data} optional={optional} chartType={chartType} />
     </Box>
   );
 };
