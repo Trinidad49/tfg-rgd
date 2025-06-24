@@ -2,7 +2,7 @@ import React from "react";
 import { Typography } from "@mui/material";
 import { ResponsiveBar } from "@nivo/bar";
 
-export const MultiRenderer = ({ data, title }) => {
+export const MultiRenderer = ({ data, title, surveyATitle, surveyBTitle }) => {
   if (!data || data.length === 0) {
     return (
       <Typography color="error">
@@ -13,14 +13,16 @@ export const MultiRenderer = ({ data, title }) => {
 
   const formattedData = data.map((item) => ({
     group: item.text,
-    A: item.A || 0,
-    B: item.B || 0,
+    [surveyATitle]: item.A || 0,
+    [surveyBTitle]: item.B || 0,
   }));
+
+  const keys = [surveyATitle, surveyBTitle];
 
   return (
     <ResponsiveBar
       data={formattedData}
-      keys={["A", "B"]}
+      keys={keys}
       indexBy="group"
       margin={{ top: 50, right: 130, bottom: 50, left: 80 }}
       padding={0.3}

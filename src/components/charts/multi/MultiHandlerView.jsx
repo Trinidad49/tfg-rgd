@@ -67,6 +67,8 @@ function MultiHandlerView({ surveyA, surveyB }) {
             dataA={dataA}
             dataB={dataB}
             chartType={chartType}
+            surveyATitle={surveyA.title}
+            surveyBTitle={surveyB.title}
           />
         </Box>
       )}

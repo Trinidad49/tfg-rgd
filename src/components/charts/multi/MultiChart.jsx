@@ -4,9 +4,9 @@ import { toPng } from "html-to-image";
 import { MultiRenderer } from "./MultiRenderer";
 import { MultiControls } from "./MultiControls";
 
-export const MultiChart = ({ dataA, dataB, chartType }) => {
+export const MultiChart = ({ dataA, dataB, chartType, surveyATitle, surveyBTitle }) => {
   const chartRef = useRef(null);
-  const [title, setTitle] = useState("Comparison Chart");
+  const [title, setTitle] = useState("Multi-Survey Chart");
 
   const mergedData = [];
 
@@ -71,6 +71,8 @@ export const MultiChart = ({ dataA, dataB, chartType }) => {
           type="groupedBar"
           data={mergedData}
           title={title}
+          surveyATitle={surveyATitle}
+          surveyBTitle={surveyBTitle}
         />
       </Box>
       <MultiControls
