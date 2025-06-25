@@ -1,8 +1,8 @@
 import { Autocomplete, TextField, Typography } from "@mui/material";
 import { GenerateChart } from "../charts/GenerateChart.jsx";
 import useChartViewModel from "../../viewmodels/useChartViewModel.js";
-import { useState } from "react";
-
+import { useEffect, useState } from "react";
+import ChartFilterPanel from "../charts/ChartFilterPanel.jsx";
 function ChartHandlerView({ survey }) {
   const {
     loading,
@@ -15,11 +15,39 @@ function ChartHandlerView({ survey }) {
   } = useChartViewModel(survey);
 
   const [chartType, setChartType] = useState("barh");
+  const [filterOptions, setFilterOptions] = useState([]);
+  const [selectedAnswers, setSelectedAnswers] = useState([]);
 
-  const showOptional =
-    chartType === "stackedBar" || chartType === "groupedBar";
+  const showOptional = chartType === "stackedBar" || chartType === "groupedBar";
+
+  useEffect(() => {
+    if (showOptional && optionalData?.length) {
+      const optionKeys = Object.keys(optionalData[0].options || {});
+      setFilterOptions(optionKeys);
+      setSelectedAnswers(optionKeys);
+    } else if (chartData?.length) {
+      const labels = chartData.map((d) => d.text);
+      setFilterOptions(labels);
+      setSelectedAnswers(labels);
+    }
+  }, [chartData, optionalData, chartType]);
 
   if (loading) return <Typography>Loading...</Typography>;
+
+  const filteredData =
+    !showOptional && chartData
+      ? chartData.filter((item) => selectedAnswers.includes(item.text))
+      : chartData;
+
+  const filteredOptional =
+    showOptional && optionalData
+      ? optionalData.map((item) => {
+          const filteredOptions = Object.entries(item.options || {})
+            .filter(([key]) => selectedAnswers.includes(key))
+            .reduce((acc, [k, v]) => ({ ...acc, [k]: v }), {});
+          return { ...item, options: filteredOptions };
+        })
+      : optionalData;
 
   return (
     <>
@@ -49,14 +77,21 @@ function ChartHandlerView({ survey }) {
         />
       )}
 
-      {chartData && (
-        <GenerateChart
-          data={chartData}
-          text={currentTitle}
-          optional={optionalData}
-          chartType={chartType}
-          setChartType={setChartType}
-        />
+      {(chartData || optionalData) && (
+        <>
+          <ChartFilterPanel
+            filterOptions={filterOptions}
+            selectedAnswers={selectedAnswers}
+            setSelectedAnswers={setSelectedAnswers}
+          />
+          <GenerateChart
+            data={filteredData}
+            text={currentTitle}
+            optional={filteredOptional}
+            chartType={chartType}
+            setChartType={setChartType}
+          />
+        </>
       )}
     </>
   );
