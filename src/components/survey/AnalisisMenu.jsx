@@ -30,15 +30,11 @@ export const AnalisisMenu = () => {
                 >
                     <Tab label="Simple Analysis" />
                     <Tab label="Multi-Survey Analysis" />
-                    <Tab label="Filtered Analysis" />
-                    <Tab label="WIP" />
                 </Tabs>
             </AppBar>
 
             <TabPanel value={tabIndex} index={0}><ChartMenu /></TabPanel>
             <TabPanel value={tabIndex} index={1}><MultiMenu /></TabPanel>
-            <TabPanel value={tabIndex} index={2}><ChartMenu /></TabPanel>
-            <TabPanel value={tabIndex} index={3}><ChartMenu /></TabPanel>
         </Box>
     );
 };

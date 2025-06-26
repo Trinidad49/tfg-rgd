@@ -4,7 +4,7 @@ import {
   Typography,
   Box
 } from "@mui/material";
-import useChartViewModel from "../../../viewmodels/useChartViewModel.js";
+import useMultiChartViewModel from "../../../viewmodels/useMultiChartViewModel.js";
 import { MultiChart } from "./MultiChart.jsx";
 
 function MultiHandlerView({ surveyA, surveyB }) {
@@ -13,14 +13,14 @@ function MultiHandlerView({ surveyA, surveyB }) {
     chartData: dataA,
     questions: questionsA,
     handleQuestionChange: handleQuestionA,
-  } = useChartViewModel(surveyA);
+  } = useMultiChartViewModel(surveyA);
 
   const {
     loading: loadingB,
     chartData: dataB,
     questions: questionsB,
     handleQuestionChange: handleQuestionB,
-  } = useChartViewModel(surveyB);
+  } = useMultiChartViewModel(surveyB);
 
   const chartType = "groupedBar";
 

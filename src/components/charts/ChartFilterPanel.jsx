@@ -1,60 +1,102 @@
-import React from "react";
 import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
   Typography,
+  Checkbox,
   FormGroup,
   FormControlLabel,
-  Checkbox,
   Box,
   Button,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { useState } from "react";
 
-function ChartFilterPanel({ filterOptions, selectedAnswers, setSelectedAnswers }) {
-  const toggleAnswer = (answer) => {
-    if (selectedAnswers.includes(answer)) {
-      setSelectedAnswers(selectedAnswers.filter((a) => a !== answer));
-    } else {
-      setSelectedAnswers([...selectedAnswers, answer]);
-    }
+function ChartFilterPanel({ questions, filters, setFilters }) {
+  const [expanded, setExpanded] = useState(false);
+  const [newFilterQuestion, setNewFilterQuestion] = useState("");
+
+  const filterableQuestions = questions.filter((q) =>
+    ["multipleChoice", "linear"].includes(q.type)
+  );
+
+  const addFilter = () => {
+    const q = questions.find((q) => q.text === newFilterQuestion);
+    if (!q) return;
+
+    const answers = q.answers.map((a) => a.text);
+    setFilters((prev) => ({ ...prev, [q.text]: answers }));
+    setNewFilterQuestion("");
+    setExpanded(true);
   };
 
-  const handleReset = () => {
-    setSelectedAnswers([...filterOptions]);
+  const toggleAnswer = (questionText, answerText) => {
+    const current = filters[questionText] || [];
+    const newAnswers = current.includes(answerText)
+      ? current.filter((a) => a !== answerText)
+      : [...current, answerText];
+
+    setFilters({ ...filters, [questionText]: newAnswers });
   };
 
-  const handleSelectNone = () => {
-    setSelectedAnswers([]);
+  const clearFilters = () => {
+    setFilters({});
   };
 
   return (
-    <Accordion sx={{ width: "100%", mb: 2 }} defaultExpanded>
+    <Accordion expanded={expanded} onChange={() => setExpanded(!expanded)} sx={{ mb: 2 }}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <Typography variant="subtitle1">Filter Answers</Typography>
+        <Typography>Filter Participants</Typography>
       </AccordionSummary>
       <AccordionDetails>
-        <FormGroup>
-          {filterOptions.map((answer) => (
-            <FormControlLabel
-              key={answer}
-              control={
-                <Checkbox
-                  checked={selectedAnswers.includes(answer)}
-                  onChange={() => toggleAnswer(answer)}
-                />
-              }
-              label={answer}
-            />
-          ))}
-        </FormGroup>
-        <Box display="flex" justifyContent="space-between" mt={2}>
-          <Button variant="outlined" size="small" onClick={handleReset}>
-            Select All
+        {Object.keys(filters).map((questionText) => {
+          const question = questions.find((q) => q.text === questionText);
+          if (!question) return null;
+          return (
+            <Box key={questionText} mb={2}>
+              <Typography variant="subtitle2">{questionText}</Typography>
+              <FormGroup>
+                {question.answers.map((a) => (
+                  <FormControlLabel
+                    key={a.text}
+                    control={
+                      <Checkbox
+                        checked={filters[questionText].includes(a.text)}
+                        onChange={() => toggleAnswer(questionText, a.text)}
+                      />
+                    }
+                    label={a.text}
+                  />
+                ))}
+              </FormGroup>
+            </Box>
+          );
+        })}
+
+        <Box display="flex" gap={1} alignItems="center" mt={2}>
+          <Select
+            value={newFilterQuestion}
+            onChange={(e) => setNewFilterQuestion(e.target.value)}
+            displayEmpty
+            size="small"
+            style={{ minWidth: 200 }}
+          >
+            <MenuItem value="" disabled>Select filter question</MenuItem>
+            {filterableQuestions
+              .filter((q) => !filters[q.text])
+              .map((q) => (
+                <MenuItem key={q.text} value={q.text}>
+                  {q.text}
+                </MenuItem>
+              ))}
+          </Select>
+          <Button onClick={addFilter} variant="outlined" size="small">
+            Add Filter
           </Button>
-          <Button variant="text" size="small" onClick={handleSelectNone}>
-            Clear
+          <Button onClick={clearFilters} variant="text" size="small" color="error">
+            Clear Filters
           </Button>
         </Box>
       </AccordionDetails>
