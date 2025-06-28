@@ -68,9 +68,6 @@ function useChartViewModel(survey, activeFilters) {
 
     setCurrentTitle(selectedQuestion.text);
     setChartData(getChartData(questionIndex, filteredResponses));
-
-    setOptionalData(null);
-    setSelectedOptionalQuestion(null);
   }, [surveyData, selectedQuestion, applyFilters, getChartData, survey.questions]);
 
   useEffect(() => {
@@ -141,6 +138,7 @@ function useChartViewModel(survey, activeFilters) {
     questions: survey.questions,
     handleQuestionChange,
     handleOptionalChange,
+    selectedOptionalQuestion, // Expose to use downstream
   };
 }
 

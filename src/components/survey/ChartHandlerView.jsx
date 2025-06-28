@@ -16,6 +16,7 @@ function ChartHandlerView({ survey }) {
     questions,
     handleQuestionChange,
     handleOptionalChange,
+    selectedOptionalQuestion,
   } = useChartViewModel(survey, filters);
 
   const showOptional = chartType === "stackedBar" || chartType === "groupedBar";
@@ -46,6 +47,7 @@ function ChartHandlerView({ survey }) {
           <Autocomplete
             options={questions}
             getOptionLabel={(o) => o.text}
+            value={selectedOptionalQuestion || null}
             onChange={(_, value) => value && handleOptionalChange(value)}
             renderInput={(params) => (
               <TextField
@@ -80,7 +82,7 @@ function ChartHandlerView({ survey }) {
           <GenerateChart
             data={chartData}
             text={currentTitle}
-            optional={optionalData}
+            optional={showOptional ? optionalData : null}
             chartType={chartType}
             setChartType={setChartType}
           />
@@ -88,7 +90,6 @@ function ChartHandlerView({ survey }) {
       </div>
     </div>
   );
-
 }
 
 export default ChartHandlerView;
