@@ -51,6 +51,29 @@ function ChartFilterPanel({ questions, filters, setFilters }) {
         <Typography>Filter Participants</Typography>
       </AccordionSummary>
       <AccordionDetails>
+        <Box display="flex" gap={1} alignItems="center" mb={2}>
+          <Box flexGrow={1}>
+            <Select
+              value={newFilterQuestion}
+              onChange={(e) => setNewFilterQuestion(e.target.value)}
+              displayEmpty
+              size="small"
+              fullWidth
+            >
+              <MenuItem value="" disabled>Select filter question</MenuItem>
+              {filterableQuestions
+                .filter((q) => !filters[q.text])
+                .map((q) => (
+                  <MenuItem key={q.text} value={q.text}>
+                    {q.text}
+                  </MenuItem>
+                ))}
+            </Select>
+          </Box>
+          <Button onClick={addFilter} variant="outlined" size="small">
+            Add
+          </Button>
+        </Box>
         {Object.keys(filters).map((questionText) => {
           const question = questions.find((q) => q.text === questionText);
           if (!question) return null;
@@ -74,27 +97,7 @@ function ChartFilterPanel({ questions, filters, setFilters }) {
             </Box>
           );
         })}
-
-        <Box display="flex" gap={1} alignItems="center" mt={2}>
-          <Select
-            value={newFilterQuestion}
-            onChange={(e) => setNewFilterQuestion(e.target.value)}
-            displayEmpty
-            size="small"
-            style={{ minWidth: 200 }}
-          >
-            <MenuItem value="" disabled>Select filter question</MenuItem>
-            {filterableQuestions
-              .filter((q) => !filters[q.text])
-              .map((q) => (
-                <MenuItem key={q.text} value={q.text}>
-                  {q.text}
-                </MenuItem>
-              ))}
-          </Select>
-          <Button onClick={addFilter} variant="outlined" size="small">
-            Add Filter
-          </Button>
+        <Box mt={2} display="flex" justifyContent="flex-end">
           <Button onClick={clearFilters} variant="text" size="small" color="error">
             Clear Filters
           </Button>
