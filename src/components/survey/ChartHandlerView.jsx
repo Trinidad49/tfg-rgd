@@ -23,50 +23,72 @@ function ChartHandlerView({ survey }) {
   if (loading) return <Typography>Loading...</Typography>;
 
   return (
-    <>
-      <Autocomplete
-        options={questions}
-        getOptionLabel={(o) => o.text}
-        onChange={(_, value) => value && handleQuestionChange(value)}
-        renderInput={(params) => (
-          <TextField {...params} label="Select Question" variant="outlined" />
-        )}
-        style={{ width: "100%", marginTop: 20, marginBottom: 20 }}
-      />
-
-      {showOptional && (
+    <div style={{ display: "flex", height: "100%" }}>
+      <div
+        style={{
+          flex: "0 0 450px",
+          paddingRight: 20,
+          borderRight: "1px solid #ccc",
+          overflowY: "auto",
+        }}
+      >
         <Autocomplete
           options={questions}
           getOptionLabel={(o) => o.text}
-          onChange={(_, value) => value && handleOptionalChange(value)}
+          onChange={(_, value) => value && handleQuestionChange(value)}
           renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Select Optional Question"
-              variant="outlined"
-            />
+            <TextField {...params} label="Select Question" variant="outlined" />
           )}
           style={{ width: "100%", marginTop: 20, marginBottom: 20 }}
         />
-      )}
 
-      <ChartFilterPanel
-        questions={questions}
-        filters={filters}
-        setFilters={setFilters}
-      />
+        {showOptional && (
+          <Autocomplete
+            options={questions}
+            getOptionLabel={(o) => o.text}
+            onChange={(_, value) => value && handleOptionalChange(value)}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Select Optional Question"
+                variant="outlined"
+              />
+            )}
+            style={{ width: "100%", marginTop: 20, marginBottom: 20 }}
+          />
+        )}
 
-      {(chartData || optionalData) && (
-        <GenerateChart
-          data={chartData}
-          text={currentTitle}
-          optional={optionalData}
-          chartType={chartType}
-          setChartType={setChartType}
+        <ChartFilterPanel
+          questions={questions}
+          filters={filters}
+          setFilters={setFilters}
         />
-      )}
-    </>
+      </div>
+
+      <div
+        style={{
+          flex: 1,
+          paddingLeft: 20,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          overflow: "auto",
+        }}
+      >
+        {(chartData || optionalData) && (
+          <GenerateChart
+            data={chartData}
+            text={currentTitle}
+            optional={optionalData}
+            chartType={chartType}
+            setChartType={setChartType}
+          />
+        )}
+      </div>
+    </div>
   );
+
 }
 
 export default ChartHandlerView;
