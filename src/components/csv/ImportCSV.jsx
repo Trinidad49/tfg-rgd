@@ -100,39 +100,56 @@ export const ImportCSV = () => {
   };
 
   const formatCSVData = (csvData) => {
-    const rows = csvData.split("\n");
-    const questions = rows[0]
-      .split(",")
-      .map((question) => ({ text: question.trim() }));
+  const raw = csvData.charCodeAt(0) === 0xfeff ? csvData.slice(1) : csvData;
 
-    const answers = [];
-    for (let i = 1; i < rows.length; i++) {
-      const rowData = rows[i].split('","');
-      rowData[0] = rowData[0].substring(1);
-      rowData[rowData.length - 1] = rowData[rowData.length - 1].substring(
-        0,
-        rowData[rowData.length - 1].length - 1
-      );
-      const userAnswers = rowData.map((answer, index) => ({
-        text: questions[index]?.text,
-        answer: answer,
-      }));
-      answers.push(userAnswers);
+  const rows = raw
+    .split("\n")
+    .map((row) => row.trim())
+    .filter((row) => row.length > 0);
+
+  const parseCSVRow = (row, delimiter = ";") => {
+    const regex = new RegExp(
+      `(?<=^|${delimiter})"((?:[^"]|"")*)"(?=${delimiter}|$)`,
+      "g"
+    );
+    const values = [];
+    let match;
+    while ((match = regex.exec(row)) !== null) {
+      values.push(match[1].replace(/""/g, `"`));
     }
-
-    const newSurvey = {
-      userID: localStorage.getItem("userID"),
-      title: `${fileName.slice(0, -4)}_Import`,
-      questions: questions.map((q, i) => ({
-        text: q.text,
-        mandatory: false,
-        type: getQuestionType(i, answers, questions).type,
-        answers: getQuestionType(i, answers, questions).answers,
-      })),
-    };
-
-    return { answers: answers, survey: newSurvey };
+    return values;
   };
+
+  const header = parseCSVRow(rows[0]);
+  const questions = header.map((q) => ({ text: q }));
+
+  const answers = rows.slice(1).map((row) => {
+    const values = parseCSVRow(row);
+    return values.map((value, index) => ({
+      text: questions[index]?.text,
+      answer: value,
+    }));
+  });
+
+  // Use one getQuestionType call per question
+  const questionDetails = questions.map((q, i) =>
+    getQuestionType(i, answers, questions)
+  );
+
+  const newSurvey = {
+    userID: localStorage.getItem("userID"),
+    title: `${fileName.slice(0, -4)}_Import`,
+    questions: questions.map((q, i) => ({
+      text: q.text,
+      mandatory: false,
+      type: questionDetails[i].type,
+      answers: questionDetails[i].answers,
+    })),
+  };
+
+  return { answers, survey: newSurvey };
+};
+
 
   const handleImport = async () => {
     const { answers, survey } = formatCSVData(csvData);
