@@ -10,13 +10,14 @@ import {
   Container,
   Divider,
   Drawer,
-  Grid,
   List,
   ListItemButton,
   ListItemText,
 } from "@mui/material";
 import { ImportCSV } from "../csv/ImportCSV";
 import { AnalisisMenu } from "./AnalisisMenu";
+
+const drawerWidth = 240; // default drawer width
 
 export const Dashboard = ({ onLogin }) => {
   const [selectedOption, setSelectedOption] = useState("Surveys");
@@ -26,14 +27,26 @@ export const Dashboard = ({ onLogin }) => {
   };
 
   return (
-    <Container maxWidth="lg" style={{ paddingTop: 20 }}>
-      <Drawer variant="permanent" anchor="left">
+    <>
+      {/* Drawer fixed on the left */}
+      <Drawer
+        variant="permanent"
+        anchor="left"
+        sx={{
+          width: drawerWidth,
+          flexShrink: 0,
+          [`& .MuiDrawer-paper`]: {
+            width: drawerWidth,
+            boxSizing: "border-box",
+          },
+        }}
+      >
         <List>
           {["New Survey", "Surveys", "Analisis", "Import"].map((option) => (
             <ListItemButton
               key={option}
               onClick={() => handleOptionClick(option)}
-              style={{
+              sx={{
                 cursor: "pointer",
                 "&:hover": { backgroundColor: "#b6b6b6" },
               }}
@@ -47,32 +60,55 @@ export const Dashboard = ({ onLogin }) => {
               ) : (
                 <AddIcon />
               )}
-              <ListItemText style={{ marginLeft: 5 }} primary={option} />
+              <ListItemText sx={{ marginLeft: 1 }} primary={option} />
             </ListItemButton>
           ))}
         </List>
-        <List style={{ marginTop: "auto", padding: "5" }}>
+        <List sx={{ marginTop: "auto", padding: 1 }}>
           <Divider variant="middle" />
           <ListItemButton
             onClick={onLogin}
-            style={{
+            sx={{
               cursor: "pointer",
               "&:hover": { backgroundColor: "#b6b6b6" },
             }}
           >
             <LogoutIcon />
-            <ListItemText style={{ marginLeft: 5 }} primary="Logout" />
+            <ListItemText sx={{ marginLeft: 1 }} primary="Logout" />
           </ListItemButton>
         </List>
       </Drawer>
-      <Grid style={{ marginLeft: 50 }} container>
-        <Grid item xs={13}>
-          {selectedOption === "Surveys" && <SurveyList />}
-          {selectedOption === "New Survey" && <SurveyForm />}
-          {selectedOption === "Import" && <ImportCSV />}
-          {selectedOption === "Analisis" && <AnalisisMenu />}
-        </Grid>
-      </Grid>
-    </Container>
+
+      {/* Main content */}
+      {selectedOption === "Analisis" ? (
+        <main
+          style={{
+            marginLeft: drawerWidth,
+            padding: 20,
+            width: `calc(100% - ${drawerWidth}px)`,
+            minHeight: "100vh",
+            boxSizing: "border-box",
+          }}
+        >
+          <AnalisisMenu />
+        </main>
+      ) : (
+        <div
+          style={{
+            marginLeft: drawerWidth,
+            display: "flex",
+            justifyContent: "center",
+            paddingTop: 20,
+            boxSizing: "border-box",
+          }}
+        >
+          <Container maxWidth="lg">
+            {selectedOption === "Surveys" && <SurveyList />}
+            {selectedOption === "New Survey" && <SurveyForm />}
+            {selectedOption === "Import" && <ImportCSV />}
+          </Container>
+        </div>
+      )}
+    </>
   );
 };
