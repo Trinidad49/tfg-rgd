@@ -80,28 +80,44 @@ const SurveySummaryView = ({ survey }) => {
     };
   };
 
-  const handleExportPDF = async () => {
-    const canvas = await html2canvas(summaryRef.current, {
-      scale: 2,
-    });
-    const imgData = canvas.toDataURL("image/png");
+const handleExportPDF = async () => {
+  const pdf = new jsPDF("p", "pt", "a4");
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
 
-    const pdf = new jsPDF("p", "pt", "a4");
-    const pageWidth = pdf.internal.pageSize.getWidth();
+  const margin = 40;
+  const usableWidth = pageWidth - margin * 2;
 
-    const margin = 20;
-    const usableWidth = pageWidth - margin * 2;
-    const scaledHeight = (canvas.height * usableWidth) / canvas.width;
+  const container = summaryRef.current;
 
-    // Draw border
-    pdf.setLineWidth(1);
-    pdf.rect(margin, margin, usableWidth, scaledHeight, "S");
+  const headerNode = container.children[0];
+  const headerCanvas = await html2canvas(headerNode, { scale: 2 });
+  const headerImg = headerCanvas.toDataURL("image/png");
+  let headerHeight = (headerCanvas.height * usableWidth) / headerCanvas.width;
 
-    // Add image inside border
-    pdf.addImage(imgData, "PNG", margin, margin, usableWidth, scaledHeight);
+  pdf.addImage(headerImg, "PNG", margin, margin, usableWidth, headerHeight);
+  let currentHeight = margin + headerHeight + 20;
 
-    pdf.save(`${survey.title}_summary.pdf`);
-  };
+  const questionsContainer = container.children[2];
+
+  for (let i = 0; i < questionsContainer.children.length; i++) {
+    const questionNode = questionsContainer.children[i];
+    const canvas = await html2canvas(questionNode, { scale: 2 });
+    const img = canvas.toDataURL("image/png");
+    const imgHeight = (canvas.height * usableWidth) / canvas.width;
+
+    if (currentHeight + imgHeight > pageHeight - margin) {
+      pdf.addPage();
+      currentHeight = margin;
+    }
+    pdf.addImage(img, "PNG", margin, currentHeight, usableWidth, imgHeight);
+    currentHeight += imgHeight + 20;
+  }
+
+  pdf.save(`${survey.title}_summary.pdf`);
+};
+
+
 
   if (answers === null) return <CircularProgress />;
   if (answers.length === 0)
