@@ -1,7 +1,7 @@
 import React from "react";
 import {
   Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, Paper, Typography
+  TableHead, TableRow, Paper
 } from "@mui/material";
 
 export const ChartTable = ({ data, optional, chartType }) => {

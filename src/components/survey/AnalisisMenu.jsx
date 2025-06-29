@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { AppBar, Tabs, Tab, Box } from '@mui/material';
 import { ChartMenu } from './ChartMenu';
 import { MultiMenu } from '../charts/multi/MultiMenu';
+import { SummaryMenu } from '../charts/summary/SummaryMenu';
 
 function TabPanel({ children, value, index }) {
     return (
@@ -28,13 +29,14 @@ export const AnalisisMenu = () => {
                     textColor="primary"
                     variant="fullWidth"
                 >
+                    <Tab label="Survey Summary" />
                     <Tab label="Simple Analysis" />
                     <Tab label="Multi-Survey Analysis" />
                 </Tabs>
             </AppBar>
-
-            <TabPanel value={tabIndex} index={0}><ChartMenu /></TabPanel>
-            <TabPanel value={tabIndex} index={1}><MultiMenu /></TabPanel>
+            <TabPanel value={tabIndex} index={0}><SummaryMenu /></TabPanel>
+            <TabPanel value={tabIndex} index={1}><ChartMenu /></TabPanel>
+            <TabPanel value={tabIndex} index={2}><MultiMenu /></TabPanel>
         </Box>
     );
 };
