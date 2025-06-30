@@ -30,7 +30,7 @@ export const TableData = ({ data, surveyATitle, surveyBTitle }) => {
         <TableHead>
           <TableRow sx={{ backgroundColor: "#f5f5f5" }}>
             <TableCell sx={{ fontWeight: "bold", fontSize: "1rem" }}>
-              Label
+              Category
             </TableCell>
             <TableCell align="right" sx={{ fontWeight: "bold", fontSize: "1rem" }}>
               {surveyATitle}

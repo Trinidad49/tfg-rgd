@@ -14,6 +14,7 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
+import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 
 export const Question = ({ index, question, onUpdate, onRemove }) => {
   const initialLinearValues =
@@ -60,7 +61,7 @@ export const Question = ({ index, question, onUpdate, onRemove }) => {
 
   const handleRemoveAnswer = (answerIndex) => {
     const updatedAnswers = question.answers.filter(
-      (_, index) => index !== answerIndex
+      (_, i) => i !== answerIndex
     );
     onUpdate(index, {
       ...question,
@@ -84,8 +85,16 @@ export const Question = ({ index, question, onUpdate, onRemove }) => {
   return (
     <Card variant="outlined" style={{ marginBottom: "16px" }}>
       <CardContent>
-        <Grid container style={{ marginBottom: 15 }}>
-          <Grid xs={9}>
+        <Grid container alignItems="center" spacing={2} style={{ marginBottom: 15 }}>
+          <Grid item>
+            <div
+              {...(question.dragHandleProps || {})}
+              style={{ cursor: "grab", paddingTop: 10 }}
+            >
+              <DragIndicatorIcon />
+            </div>
+          </Grid>
+          <Grid item xs={8}>
             <TextField
               placeholder="Question Text"
               value={question.text}
@@ -96,10 +105,11 @@ export const Question = ({ index, question, onUpdate, onRemove }) => {
               margin="normal"
             />
           </Grid>
-          <Grid xs={3}>
+
+          <Grid item xs={3}>
             <FormControl
               variant="standard"
-              style={{ marginLeft: 50, minWidth: 150 }}
+              style={{ marginLeft: 20, minWidth: 150 }}
             >
               <InputLabel>Type</InputLabel>
               <Select
@@ -113,10 +123,7 @@ export const Question = ({ index, question, onUpdate, onRemove }) => {
               </Select>
             </FormControl>
 
-            <IconButton
-              onClick={() => onRemove(index)}
-              style={{ marginLeft: "10px" }}
-            >
+            <IconButton onClick={() => onRemove(index)} style={{ marginLeft: "10px" }}>
               <DeleteIcon />
             </IconButton>
           </Grid>
@@ -177,7 +184,7 @@ export const Question = ({ index, question, onUpdate, onRemove }) => {
                 >
                   <TextField
                     placeholder="Answer"
-                    value={answer.text}
+                    value={answer.text ?? answer}
                     onChange={(e) =>
                       handleUpdateAnswer(answerIndex, e.target.value)
                     }
@@ -205,6 +212,7 @@ export const Question = ({ index, question, onUpdate, onRemove }) => {
             )}
           </>
         )}
+
         <div
           style={{
             display: "flex",

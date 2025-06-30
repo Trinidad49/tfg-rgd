@@ -84,6 +84,7 @@ export const AnswerSurvey = ({ surveyID }) => {
         (Array.isArray(a.answer) && a.answer.length === 0);
       return isMandatory && isEmpty;
     });
+
     setAnswerCheck(updatedCheck);
 
     if (!updatedCheck.includes(true)) {
@@ -117,104 +118,114 @@ export const AnswerSurvey = ({ surveyID }) => {
   return (
     <Container maxWidth="lg">
       <Paper sx={{ backgroundColor: "white", m: 1, p: isMobile ? 2 : 4 }}>
-        <Typography variant={isMobile ? "h4" : "h3"} gutterBottom>
+        <Typography variant={isMobile ? "h5" : "h4"} gutterBottom>
           {surveyData.title}
         </Typography>
         <Divider sx={{ my: 2 }} />
-        {surveyData.questions.map((question, index) => (
-          <Card key={index} variant="outlined" sx={{ mb: 2 }}>
-            <CardContent>
-              <Typography variant={isMobile ? "h6" : "h5"} sx={{ mb: 1 }}>
-                {question.text}
-                {question.mandatory && <span style={{ color: "red" }}> *</span>}
-                {answerCheck[index] && (
-                  <span style={{ color: "red", fontSize: 14 }}>
-                    {" "}You must answer this question
-                  </span>
-                )}
-              </Typography>
 
-              {question.type === "text" ? (
-                <TextField
-                  placeholder="Answer"
-                  value={userAnswers[index].answer}
-                  onChange={(e) => handleAnswerChange(index, e.target.value)}
-                  fullWidth
-                  multiline
-                  variant="standard"
-                  margin="normal"
-                />
-              ) : question.type === "multipleChoice" ? (
-                <RadioGroup
-                  value={userAnswers[index].answer}
-                  onChange={(e) => handleAnswerChange(index, e.target.value)}
-                >
-                  <Grid container spacing={1}>
-                    {question.answers.map((option, i) => (
-                      <Grid item xs={12} sm={6} key={i}>
-                        <FormControlLabel
-                          value={option.text}
-                          control={<Radio />}
-                          label={<Typography variant="body2">{option.text}</Typography>}
-                        />
-                      </Grid>
-                    ))}
-                  </Grid>
-                </RadioGroup>
-              ) : question.type === "linear" ? (
-                <Box display="flex" justifyContent="center">
+        {surveyData.questions.map((question, index) => (
+          <Card key={index} variant="outlined" sx={{ mb: 3 }}>
+            <CardContent>
+              <Stack spacing={2}>
+                <Box>
+                  <Typography variant="h6">
+                    {index + 1}. {question.text}
+                    {question.mandatory && <span style={{ color: "red" }}> *</span>}
+                  </Typography>
+                  {answerCheck[index] && (
+                    <Typography variant="caption" color="error">
+                      You must answer this question
+                    </Typography>
+                  )}
+                </Box>
+                {question.type === "text" && (
+                  <TextField
+                    placeholder="Your answer"
+                    value={userAnswers[index].answer}
+                    onChange={(e) => handleAnswerChange(index, e.target.value)}
+                    fullWidth
+                    multiline
+                    variant="outlined"
+                  />
+                )}
+                {question.type === "multipleChoice" && (
                   <RadioGroup
                     value={userAnswers[index].answer}
                     onChange={(e) => handleAnswerChange(index, e.target.value)}
                   >
                     <Grid container spacing={1}>
                       {question.answers.map((option, i) => (
-                        <Grid item xs={2} sm={1} key={i}>
-                          <Stack alignItems="center">
-                            <Typography variant="body2">{option.text}</Typography>
-                            <FormControlLabel
-                              value={option.text}
-                              control={<Radio />}
-                              label=""
-                            />
-                          </Stack>
+                        <Grid item xs={12} sm={6} key={i}>
+                          <FormControlLabel
+                            value={option.text}
+                            control={<Radio />}
+                            label={option.text}
+                          />
                         </Grid>
                       ))}
                     </Grid>
                   </RadioGroup>
-                </Box>
-              ) : (
-                <Grid container spacing={1}>
-                  {question.answers.map((option, i) => (
-                    <Grid item xs={12} sm={6} key={i}>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={userAnswers[index].answer.includes(option.text)}
-                            onChange={(e) => {
-                              const checked = e.target.checked;
-                              const updated = [...userAnswers[index].answer];
-                              if (checked) updated.push(option.text);
-                              else {
-                                const idx = updated.indexOf(option.text);
-                                if (idx > -1) updated.splice(idx, 1);
-                              }
-                              handleAnswerChange(index, updated);
-                            }}
-                          />
-                        }
-                        label={<Typography variant="body2">{option.text}</Typography>}
-                      />
-                    </Grid>
-                  ))}
-                </Grid>
-              )}
+                )}
+                {question.type === "linear" && (
+                  <Box>
+                    <RadioGroup
+                      row
+                      value={userAnswers[index].answer}
+                      onChange={(e) => handleAnswerChange(index, e.target.value)}
+                    >
+                      <Grid container justifyContent="center" spacing={2}>
+                        {question.answers.map((option, i) => (
+                          <Grid item key={i}>
+                            <Stack spacing={0.5} alignItems="center">
+                              <Typography variant="caption">{option.text}</Typography>
+                              <Radio value={option.text} size="small" />
+                            </Stack>
+                          </Grid>
+                        ))}
+                      </Grid>
+                    </RadioGroup>
+                  </Box>
+                )}
+                {question.type === "checkbox" && (
+                  <Grid container spacing={1}>
+                    {question.answers.map((option, i) => (
+                      <Grid item xs={12} sm={6} key={i}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={userAnswers[index].answer.includes(option.text)}
+                              onChange={(e) => {
+                                const checked = e.target.checked;
+                                const updated = [...userAnswers[index].answer];
+                                if (checked) updated.push(option.text);
+                                else {
+                                  const idx = updated.indexOf(option.text);
+                                  if (idx > -1) updated.splice(idx, 1);
+                                }
+                                handleAnswerChange(index, updated);
+                              }}
+                            />
+                          }
+                          label={option.text}
+                        />
+                      </Grid>
+                    ))}
+                  </Grid>
+                )}
+              </Stack>
             </CardContent>
           </Card>
         ))}
-        <Button variant="contained" onClick={handleSaveAnswers} size={isMobile ? "small" : "medium"}>
-          Save Answers
-        </Button>
+        <Box mt={3} display="flex" justifyContent="flex-end">
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSaveAnswers}
+            size={isMobile ? "small" : "medium"}
+          >
+            Submit Survey
+          </Button>
+        </Box>
       </Paper>
     </Container>
   );

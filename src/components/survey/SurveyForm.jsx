@@ -9,7 +9,9 @@ import {
 } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import { Question } from "./Question";
-const backUrl = process.env.REACT_APP_BACK
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+
+const backUrl = process.env.REACT_APP_BACK;
 
 export const SurveyForm = ({ survey }) => {
   const [title, setTitle] = useState("");
@@ -40,13 +42,21 @@ export const SurveyForm = ({ survey }) => {
     const updatedQuestions = [...questions];
     updatedQuestions[index] = updatedQuestion;
     setQuestions(updatedQuestions);
-    console.log(updatedQuestion);
   };
 
   const handleRemoveQuestion = (index) => {
     const updatedQuestions = [...questions];
     updatedQuestions.splice(index, 1);
     setQuestions(updatedQuestions);
+  };
+
+  const handleDragEnd = (result) => {
+    if (!result.destination) return;
+
+    const reordered = Array.from(questions);
+    const [movedItem] = reordered.splice(result.source.index, 1);
+    reordered.splice(result.destination.index, 0, movedItem);
+    setQuestions(reordered);
   };
 
   const handleSaveSurvey = async () => {
@@ -65,11 +75,11 @@ export const SurveyForm = ({ survey }) => {
         })),
       };
 
-      //Update data when id is present
       if (id !== "") {
         sendData._id = id;
       }
-      const response = await fetch(backUrl+"/surveys", {
+
+      const response = await fetch(backUrl + "/surveys", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -78,7 +88,6 @@ export const SurveyForm = ({ survey }) => {
       });
 
       const data = await response.json();
-      //Retrieve an ID from new survey
       if (id === "") {
         setId(data._id);
         setSnackbarMessage("Survey Created");
@@ -86,7 +95,7 @@ export const SurveyForm = ({ survey }) => {
         setSnackbarMessage("Survey Updated");
       }
       setSnackbarOpen(true);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const handleCloseSnackbar = () => {
@@ -118,15 +127,46 @@ export const SurveyForm = ({ survey }) => {
         </IconButton>
       </div>
       <Divider style={{ marginBottom: 20, marginTop: 10 }} />
-      {questions.map((question, index) => (
-        <Question
-          key={index}
-          index={index}
-          question={question}
-          onUpdate={handleUpdateQuestion}
-          onRemove={handleRemoveQuestion}
-        />
-      ))}
+
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <Droppable droppableId="questions-list">
+          {(provided) => (
+            <div ref={provided.innerRef} {...provided.droppableProps}>
+              {questions.map((question, index) => (
+                <Draggable
+                  key={`question-${index}`}
+                  draggableId={`question-${index}`}
+                  index={index}
+                >
+                  {(provided) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                      style={{
+                        marginBottom: "12px",
+                        ...provided.draggableProps.style,
+                      }}
+                    >
+                      <Question
+                        index={index}
+                        question={{
+                          ...question,
+                          dragHandleProps: provided.dragHandleProps,
+                        }}
+                        onUpdate={handleUpdateQuestion}
+                        onRemove={handleRemoveQuestion}
+                      />
+                    </div>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
+
       <Button variant="contained" onClick={handleAddQuestion}>
         Add Question
       </Button>

@@ -48,7 +48,7 @@ function ChartFilterPanel({ questions, filters, setFilters }) {
   return (
     <Accordion expanded={expanded} onChange={() => setExpanded(!expanded)} sx={{ mb: 2 }}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <Typography>Filter Participants</Typography>
+        <Typography>Filter Results</Typography>
       </AccordionSummary>
       <AccordionDetails>
         <Box display="flex" gap={1} alignItems="center" mb={2}>
