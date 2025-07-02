@@ -41,7 +41,7 @@ export const MultiChart = ({ dataA, dataB, chartType, surveyATitle, surveyBTitle
 
   const handleCSVDownload = () => {
     const BOM = "\uFEFF";
-    const rows = [["Label", surveyATitle, surveyBTitle]];
+    const rows = [["Category", surveyATitle, surveyBTitle]];
 
     mergedData.forEach(row => {
       rows.push([row.text, row.A, row.B]);

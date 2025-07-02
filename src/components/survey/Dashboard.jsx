@@ -17,7 +17,7 @@ import {
 import { ImportCSV } from "../csv/ImportCSV";
 import { AnalisisMenu } from "./AnalisisMenu";
 
-const drawerWidth = 240; // default drawer width
+const drawerWidth = 240;
 
 export const Dashboard = ({ onLogin }) => {
   const [selectedOption, setSelectedOption] = useState("Surveys");
@@ -28,7 +28,6 @@ export const Dashboard = ({ onLogin }) => {
 
   return (
     <>
-      {/* Drawer fixed on the left */}
       <Drawer
         variant="permanent"
         anchor="left"
@@ -74,12 +73,11 @@ export const Dashboard = ({ onLogin }) => {
             }}
           >
             <LogoutIcon />
-            <ListItemText sx={{ marginLeft: 1 }} primary="Logout" />
+            <ListItemText sx={{ marginLeft: 1 }} primary="Log out" />
           </ListItemButton>
         </List>
       </Drawer>
 
-      {/* Main content */}
       {selectedOption === "Analisis" ? (
         <main
           style={{

@@ -81,7 +81,7 @@ export const LoginForm = ({ onLogin }) => {
           <form onSubmit={handleLogin}>
             <Stack spacing={2}>
               <Typography align="center" component="h1" variant="h4">
-                LogIn
+                Log In
               </Typography>
               <TextField
                 id="standard-basic"
@@ -94,7 +94,7 @@ export const LoginForm = ({ onLogin }) => {
               />
               <TextField
                 id="standard-basic"
-                label="Contraseña"
+                label="Password"
                 type="password"
                 variant="standard"
                 onChange={(e) => setPassword(e.target.value)}
@@ -114,7 +114,7 @@ export const LoginForm = ({ onLogin }) => {
             </Button>
             <Divider variant="middle" />
             <Typography color={"gray"} mt={2} style={{ textAlign: "center" }}>
-              ¿No tienes cuenta?{" "}
+              Don't have an account?{" "}
               <Link
                 style={{
                   textDecoration: "none",
@@ -123,7 +123,7 @@ export const LoginForm = ({ onLogin }) => {
                 }}
                 to="/register"
               >
-                Registrate aquí
+                Register here
               </Link>
             </Typography>
           </form>

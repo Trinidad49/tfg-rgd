@@ -103,7 +103,7 @@ export const RegisterForm = ({ onRegister }) => {
               />
               <TextField
                 id="standard-basic"
-                label="Contraseña"
+                label="Password"
                 type="password"
                 variant="standard"
                 onChange={(e) => setPassword(e.target.value)}
@@ -123,7 +123,7 @@ export const RegisterForm = ({ onRegister }) => {
             </Button>
             <Divider variant="middle" />
             <Typography color={"gray"} mt={2} style={{ textAlign: "center" }}>
-              ¿Ya tienes una cuenta?{" "}
+              Already have an account?{" "}
               <Link
                 style={{
                   textDecoration: "none",
@@ -132,7 +132,7 @@ export const RegisterForm = ({ onRegister }) => {
                 }}
                 to="/"
               >
-                LogIn
+                Log In
               </Link>
             </Typography>
           </form>
