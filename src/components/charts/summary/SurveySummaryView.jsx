@@ -13,7 +13,7 @@ import { QuestionChart } from "./QuestionChart";
 const SurveySummaryView = ({ survey }) => {
   const {
     answers,
-    grouped,
+    grouped, // consider renaming to processedResults
     insights,
     summaryRef,
     handleExportPDF,
@@ -23,6 +23,13 @@ const SurveySummaryView = ({ survey }) => {
   if (answers === null) return <CircularProgress />;
   if (answers.length === 0)
     return <Typography>No responses yet for this survey.</Typography>;
+
+  // Filter questions to only those that have chartable data (exclude text, empty)
+  const chartableQuestions = survey.questions.filter((q) => {
+    if (q.type === "text") return false;
+    const responses = grouped[q.text];
+    return responses && responses.length > 0;
+  });
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
@@ -46,12 +53,8 @@ const SurveySummaryView = ({ survey }) => {
         <Divider sx={{ mb: 3 }} />
 
         <Stack spacing={6}>
-          {survey.questions.map((question) => {
-            if (question.type === "text") return null;
-
+          {chartableQuestions.map((question) => {
             const responses = grouped[question.text];
-            if (!responses || responses.length === 0) return null;
-
             const chartData = getChartData(responses, question.type);
 
             return (

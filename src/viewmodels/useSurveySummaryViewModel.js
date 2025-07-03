@@ -23,13 +23,16 @@ export const useSurveySummaryViewModel = (survey) => {
   useEffect(() => {
     setAnswers(null);
     fetchSurveyAnswers(survey._id)
-      .then(setAnswers)
+      .then((data) => {
+        setAnswers(data);
+      })
       .catch((err) => {
         console.error("Error fetching answers:", err);
         setAnswers([]);
       });
   }, [survey._id]);
 
+  // Group answers by question text
   const groupAnswersByQuestion = (answers) => {
     const grouped = {};
     for (const response of answers) {
@@ -45,41 +48,30 @@ export const useSurveySummaryViewModel = (survey) => {
     return grouped;
   };
 
-  const buildBarChartData = (responses) => {
+  // Helper to build consistent chart data format: { text, count, color }
+  const buildChartData = (responses) => {
     const counts = {};
     responses.forEach((r) => {
       counts[r] = (counts[r] || 0) + 1;
     });
 
-    return Object.entries(counts).map(([label, value], i) => ({
-      answer: label,
+    const data = Object.entries(counts).map(([label, value], i) => ({
+      text: label,
       count: value,
       color: baseColorPalette[i % baseColorPalette.length],
     }));
-  };
 
-  const buildPieChartData = (responses) => {
-    const counts = {};
-    responses.forEach((r) => {
-      counts[r] = (counts[r] || 0) + 1;
-    });
-
-    return Object.entries(counts).map(([label, value], i) => ({
-      id: label,
-      label,
-      value,
-      color: baseColorPalette[i % baseColorPalette.length],
-    }));
+    return data;
   };
 
   const getChartData = (responses, type) => {
     switch (type) {
       case "multipleChoice":
-        return buildPieChartData(responses);
+        // Pie chart expects { id, label, value, color } in QuestionChart, so map on the fly there
+        return buildChartData(responses);
       case "checkbox":
-        return buildBarChartData(responses);
       case "linear":
-        return buildBarChartData(responses);
+        return buildChartData(responses);
       default:
         return [];
     }
@@ -89,6 +81,7 @@ export const useSurveySummaryViewModel = (survey) => {
     totalResponses: answers ? answers.length : 0,
   });
 
+  // PDF export logic unchanged, just kept here for completeness
   const handleExportPDF = async () => {
     const pdf = new jsPDF("p", "pt", "a4");
     const pageWidth = pdf.internal.pageSize.getWidth();
@@ -97,10 +90,15 @@ export const useSurveySummaryViewModel = (survey) => {
     const usableWidth = pageWidth - margin * 2;
 
     const container = summaryRef.current;
+    if (!container) {
+      console.warn("No summaryRef container found for PDF export.");
+      return;
+    }
+    
     const headerNode = container.children[0];
     const headerCanvas = await html2canvas(headerNode, { scale: 2 });
     const headerImg = headerCanvas.toDataURL("image/png");
-    let headerHeight = (headerCanvas.height * usableWidth) / headerCanvas.width;
+    const headerHeight = (headerCanvas.height * usableWidth) / headerCanvas.width;
 
     pdf.addImage(headerImg, "PNG", margin, margin, usableWidth, headerHeight);
     let currentHeight = margin + headerHeight + 20;
