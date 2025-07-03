@@ -4,8 +4,16 @@ import html2canvas from "html2canvas";
 import { fetchSurveyAnswers } from "../services/answerService";
 
 const baseColorPalette = [
-  "#4e79a7", "#f28e2b", "#e15759", "#76b7b2", "#59a14f",
-  "#edc949", "#af7aa1", "#ff9da7", "#9c755f", "#bab0ac",
+  "#4e79a7",
+  "#f28e2b",
+  "#e15759",
+  "#76b7b2",
+  "#59a14f",
+  "#edc949",
+  "#af7aa1",
+  "#ff9da7",
+  "#9c755f",
+  "#bab0ac",
 ];
 
 export const useSurveySummaryViewModel = (survey) => {
@@ -27,7 +35,11 @@ export const useSurveySummaryViewModel = (survey) => {
     for (const response of answers) {
       for (const { text, answer } of response.answers) {
         if (!grouped[text]) grouped[text] = [];
-        grouped[text].push(answer);
+        if (Array.isArray(answer)) {
+          grouped[text].push(...answer);
+        } else {
+          grouped[text].push(answer);
+        }
       }
     }
     return grouped;
@@ -46,8 +58,35 @@ export const useSurveySummaryViewModel = (survey) => {
     }));
   };
 
+  const buildPieChartData = (responses) => {
+    const counts = {};
+    responses.forEach((r) => {
+      counts[r] = (counts[r] || 0) + 1;
+    });
+
+    return Object.entries(counts).map(([label, value], i) => ({
+      id: label,
+      label,
+      value,
+      color: baseColorPalette[i % baseColorPalette.length],
+    }));
+  };
+
+  const getChartData = (responses, type) => {
+    switch (type) {
+      case "multipleChoice":
+        return buildPieChartData(responses);
+      case "checkbox":
+        return buildBarChartData(responses);
+      case "linear":
+        return buildBarChartData(responses);
+      default:
+        return [];
+    }
+  };
+
   const getInsights = (grouped) => ({
-    totalResponses: answers.length,
+    totalResponses: answers ? answers.length : 0,
   });
 
   const handleExportPDF = async () => {
@@ -58,7 +97,6 @@ export const useSurveySummaryViewModel = (survey) => {
     const usableWidth = pageWidth - margin * 2;
 
     const container = summaryRef.current;
-
     const headerNode = container.children[0];
     const headerCanvas = await html2canvas(headerNode, { scale: 2 });
     const headerImg = headerCanvas.toDataURL("image/png");
@@ -88,8 +126,7 @@ export const useSurveySummaryViewModel = (survey) => {
   };
 
   const grouped = answers ? groupAnswersByQuestion(answers) : {};
-  const insights = answers ? getInsights(grouped) : {};
-  const getChartData = (responses) => buildBarChartData(responses);
+  const insights = getInsights(grouped);
 
   return {
     answers,

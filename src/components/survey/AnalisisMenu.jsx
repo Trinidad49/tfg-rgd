@@ -30,7 +30,7 @@ export const AnalisisMenu = () => {
                     variant="fullWidth"
                 >
                     <Tab label="Survey Summary" />
-                    <Tab label="Simple Analysis" />
+                    <Tab label="Question Analysis" />
                     <Tab label="Multi-Survey Analysis" />
                 </Tabs>
             </AppBar>
