@@ -3,7 +3,6 @@ import {
   Box,
   CircularProgress,
   Divider,
-  Button,
   Container,
   Stack,
 } from "@mui/material";
@@ -16,7 +15,6 @@ const SurveySummaryView = ({ survey }) => {
     grouped, // consider renaming to processedResults
     insights,
     summaryRef,
-    handleExportPDF,
     getChartData,
   } = useSurveySummaryViewModel(survey);
 
@@ -40,9 +38,6 @@ const SurveySummaryView = ({ survey }) => {
         mb={2}
       >
         <Typography variant="h4">Summary: {survey.title}</Typography>
-        <Button variant="outlined" onClick={handleExportPDF}>
-          Export as PDF
-        </Button>
       </Box>
 
       <Box ref={summaryRef}>

@@ -3,6 +3,7 @@ import { Box, Typography, Button, ToggleButton, ToggleButtonGroup } from "@mui/m
 import { ResponsiveBar } from "@nivo/bar";
 import { ResponsivePie } from "@nivo/pie";
 import { toPng } from "html-to-image";
+import { ChartTable } from "../ChartTable"; 
 
 export const QuestionChart = ({ question, responses, chartData }) => {
   const chartRef = useRef(null);
@@ -78,16 +79,7 @@ export const QuestionChart = ({ question, responses, chartData }) => {
             />
           ) : (
             // Show simple text if "table" selected
-            <Box
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              height="300px"
-              fontSize="1.25rem"
-              fontWeight="bold"
-            >
-              data
-            </Box>
+            <ChartTable data={chartData} chartType={chartType} />
           )}
         </Box>
 
@@ -133,16 +125,7 @@ export const QuestionChart = ({ question, responses, chartData }) => {
             />
           ) : (
             // Show text "data" when "table" selected
-            <Box
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              height="300px"
-              fontSize="1.25rem"
-              fontWeight="bold"
-            >
-              data
-            </Box>
+            <ChartTable data={chartData} chartType={chartType} />
           )}
         </Box>
 
