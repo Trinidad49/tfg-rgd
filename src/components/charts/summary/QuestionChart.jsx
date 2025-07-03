@@ -8,14 +8,11 @@ export const QuestionChart = ({ question, responses, chartData }) => {
   const chartRef = useRef(null);
   const [chartType, setChartType] = useState("bar");
 
-  // Determine default chart type based on question.type
   useEffect(() => {
     if (question.type === "multipleChoice") setChartType("pie");
-    else setChartType("bar"); // checkbox and linear default to bar
+    else setChartType("bar");
   }, [question.type]);
 
-  // chartData format: [{ text, count, color }]
-  // Normalize for bar chart: keys: answer (label), count
   const normalizedBarData = chartData.map(({ text, count, color }) => ({
     answer: text,
     count,
@@ -42,7 +39,7 @@ export const QuestionChart = ({ question, responses, chartData }) => {
       });
   };
 
-  // Render pie or bar charts for multipleChoice and checkbox
+  // Multiple choice and checkbox render with new "Table" toggle option
   if (question.type === "multipleChoice" || question.type === "checkbox") {
     return (
       <>
@@ -65,8 +62,9 @@ export const QuestionChart = ({ question, responses, chartData }) => {
               borderColor={{ from: "color", modifiers: [["darker", 0.2]] }}
               arcLabelsSkipAngle={10}
               arcLabelsTextColor="#333"
+              style={{ display: chartType === "table" ? "none" : undefined }}
             />
-          ) : (
+          ) : chartType === "bar" ? (
             <ResponsiveBar
               data={normalizedBarData}
               keys={["count"]}
@@ -76,7 +74,20 @@ export const QuestionChart = ({ question, responses, chartData }) => {
               padding={0.3}
               colors={({ data }) => data.color}
               enableLabel={false}
+              style={{ display: chartType === "table" ? "none" : undefined }}
             />
+          ) : (
+            // Show simple text if "table" selected
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              height="300px"
+              fontSize="1.25rem"
+              fontWeight="bold"
+            >
+              data
+            </Box>
           )}
         </Box>
 
@@ -89,9 +100,15 @@ export const QuestionChart = ({ question, responses, chartData }) => {
           >
             <ToggleButton value="bar">Horizontal Bar</ToggleButton>
             <ToggleButton value="pie">Pie Chart</ToggleButton>
+            <ToggleButton value="table">Table</ToggleButton>
           </ToggleButtonGroup>
 
-          <Button variant="outlined" size="small" onClick={handleDownload}>
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={handleDownload}
+            disabled={chartType === "table"} // Disable download when table view is active
+          >
             Download PNG
           </Button>
         </Box>
@@ -99,39 +116,58 @@ export const QuestionChart = ({ question, responses, chartData }) => {
     );
   }
 
-  // Render bar chart for linear scale questions
+  // Linear scale questions with added "Table" toggle
   if (question.type === "linear") {
     return (
       <>
         <Box ref={chartRef} height={300}>
-          <ResponsiveBar
-            data={normalizedBarData}
-            keys={["count"]}
-            indexBy="answer"
-            margin={{ top: 10, right: 20, bottom: 40, left: 50 }}
-            padding={0.3}
-            colors={({ data }) => data.color}
-            enableLabel={false}
-          />
+          {chartType === "bar" ? (
+            <ResponsiveBar
+              data={normalizedBarData}
+              keys={["count"]}
+              indexBy="answer"
+              margin={{ top: 10, right: 20, bottom: 40, left: 50 }}
+              padding={0.3}
+              colors={({ data }) => data.color}
+              enableLabel={false}
+            />
+          ) : (
+            // Show text "data" when "table" selected
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              height="300px"
+              fontSize="1.25rem"
+              fontWeight="bold"
+            >
+              data
+            </Box>
+          )}
         </Box>
 
-        <Box mt={1} display="flex" justifyContent="flex-end" alignItems="center">
-          <Button variant="outlined" size="small" onClick={handleDownload}>
+        <Box mt={1} display="flex" justifyContent="space-between" alignItems="center">
+          <ToggleButtonGroup
+            size="small"
+            value={chartType}
+            exclusive
+            onChange={handleChartTypeChange}
+            sx={{ mr: 1 }}
+          >
+            <ToggleButton value="bar">Bar Chart</ToggleButton>
+            <ToggleButton value="table">Table</ToggleButton>
+          </ToggleButtonGroup>
+
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={handleDownload}
+            disabled={chartType === "table"} // Disable download for table view
+          >
             Download PNG
           </Button>
         </Box>
       </>
-    );
-  }
-
-  // Text type just shows count with no chart
-  if (question.type === "text") {
-    return (
-      <Box mt={1}>
-        <Typography variant="body2" color="text.secondary">
-          {responses.length} text responses. Visualization not available.
-        </Typography>
-      </Box>
     );
   }
 
