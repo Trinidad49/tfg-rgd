@@ -1,4 +1,3 @@
-// components/surveySummary/useSurveySummaryViewModel.js
 import { useEffect, useState, useRef } from "react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
