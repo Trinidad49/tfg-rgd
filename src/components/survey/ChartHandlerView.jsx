@@ -19,7 +19,7 @@ function ChartHandlerView({ survey }) {
     selectedOptionalQuestion,
   } = useChartViewModel(survey, filters);
 
-  const showOptional = chartType === "stackedBar" || chartType === "groupedBar";
+  const showOptional = chartType === "stackedBar" || chartType === "groupedBar" || chartType === "groupedBarH";
 
   if (loading) return <Typography>Loading...</Typography>;
 

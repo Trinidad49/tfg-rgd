@@ -9,6 +9,7 @@ export const ChartControls = ({ chartType, onTypeChange, title, onTitleChange, o
       <MenuItem value="donut">Donut</MenuItem>
       <MenuItem value="stackedBar">Stacked Bar</MenuItem>
       <MenuItem value="groupedBar">Grouped Bar</MenuItem>
+      <MenuItem value="groupedBarH">Horizontal Grouped Bar</MenuItem>
     </Select>
     <TextField label="Chart Title" value={title} onChange={onTitleChange} />
     <Button variant="contained" onClick={onDownload}>

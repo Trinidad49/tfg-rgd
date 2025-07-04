@@ -1,12 +1,12 @@
 import React from "react";
-import { Typography } from "@mui/material";
+import { Typography, Box } from "@mui/material";
 import { ResponsiveBar } from "@nivo/bar";
 import { ResponsivePie } from "@nivo/pie";
 import { formatHorizontalBarData, formatStackedBarData, formatDonutData, formatGroupedBarData } from "./chartUtils";
 const baseColorPalette = [
-    "#4e79a7", "#f28e2b", "#e15759", "#76b7b2", "#59a14f",
-    "#edc949", "#af7aa1", "#ff9da7", "#9c755f", "#bab0ac",
-  ];
+  "#4e79a7", "#f28e2b", "#e15759", "#76b7b2", "#59a14f",
+  "#edc949", "#af7aa1", "#ff9da7", "#9c755f", "#bab0ac",
+];
 export const ChartRenderer = ({ type, data, optional, title }) => {
   switch (type) {
     case "barh": {
@@ -62,7 +62,19 @@ export const ChartRenderer = ({ type, data, optional, title }) => {
     }
     case "groupedBar": {
       if (!optional || optional.length === 0 || !optional[0].options) {
-        return <Typography color="error">Please select an optional question to render a grouped bar chart.</Typography>;
+        return (
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            height="300px"
+            textAlign="center"
+          >
+            <Typography variant="h6" color="error">
+              Please select an optional question to display this chart.
+            </Typography>
+          </Box>
+        );
       }
 
       const groupedData = optional.map((item) => ({
@@ -107,7 +119,19 @@ export const ChartRenderer = ({ type, data, optional, title }) => {
     }
     case "stackedBar": {
       if (!optional || optional.length === 0 || !optional[0].options) {
-        return <Typography color="error">Please select an optional question to render a stacked bar chart.</Typography>;
+        return (
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            height="300px"
+            textAlign="center"
+          >
+            <Typography variant="h6" color="error">
+              Please select an optional question to display this chart.
+            </Typography>
+          </Box>
+        );
       }
       const { stackedData, keys } = formatStackedBarData(optional);
       return (
@@ -145,6 +169,60 @@ export const ChartRenderer = ({ type, data, optional, title }) => {
         />
       );
     }
+    case "groupedBarH": {
+      if (!optional || optional.length === 0 || !optional[0].options) {
+        return (
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            height="300px"
+            textAlign="center"
+          >
+            <Typography variant="h6" color="error">
+              Please select an optional question to display this chart.
+            </Typography>
+          </Box>
+        );
+      }
+
+      const groupedData = optional.map((item) => ({
+        group: item.text,
+        values: item.options,
+      }));
+
+      const { formattedData, keys } = formatGroupedBarData(groupedData);
+
+      return (
+        <ResponsiveBar
+          data={formattedData}
+          keys={keys}
+          indexBy="group"
+          margin={{ top: 50, right: 130, bottom: 50, left: 120 }}
+          padding={0.3}
+          layout="horizontal"
+          groupMode="grouped"
+          colors={{ scheme: "category10" }}
+          borderColor={{ from: "color", modifiers: [["darker", 1.6]] }}
+          labelSkipWidth={12}
+          labelSkipHeight={12}
+          labelTextColor={{ from: "color", modifiers: [["darker", 1.6]] }}
+          legends={[
+            {
+              dataFrom: "keys",
+              anchor: "bottom-right",
+              direction: "column",
+              translateX: 120,
+              itemWidth: 100,
+              itemHeight: 20,
+              itemsSpacing: 2,
+              symbolSize: 20,
+            },
+          ]}
+        />
+      );
+    }
+
 
     case "donut": {
       const pieData = formatDonutData(data);

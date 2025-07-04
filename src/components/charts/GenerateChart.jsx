@@ -32,7 +32,7 @@ export const GenerateChart = ({ text, data, optional, chartType, setChartType })
     const BOM = "\uFEFF";
     const rows = [];
 
-    if (optional && (chartType === "stackedBar" || chartType === "groupedBar")) {
+    if (optional && (chartType === "stackedBar" || chartType === "groupedBar" || chartType === "groupedBarH")) {
       const keys = Object.keys(optional[0].options);
       rows.push(["Category", ...keys]);
 
