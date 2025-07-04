@@ -36,18 +36,29 @@ const baseColorPalette = [
   return { formattedData, keys };
 };
   
-  export const formatStackedBarData = (optional) => {
-    const keys = Object.keys(optional[0].options);
-    const totalValues = optional.map((o) => Object.values(o.options).reduce((sum, val) => sum + val, 0));
-    const stackedData = optional.map((o, i) => {
-      const obj = { category: o.text };
-      keys.forEach((key) => {
-        obj[key] = (o.options[key] / totalValues[i]) * 100;
-      });
-      return obj;
+export const formatStackedBarData = (optional) => {
+  const keys = Array.from(
+    new Set(optional.flatMap((o) => Object.keys(o.options)))
+  );
+
+  const stackedData = optional.map((o) => {
+    const total = keys.reduce(
+      (sum, key) => sum + (o.options[key] || 0),
+      0
+    );
+
+    const obj = { category: o.text };
+    keys.forEach((key) => {
+      const value = o.options[key] || 0;
+      obj[key] = total > 0 ? (value / total) * 100 : 0;
     });
-    return { stackedData, keys };
-  };
+
+    return obj;
+  });
+
+  return { stackedData, keys };
+};
+
   
   export const formatDonutData = (data) => {
     const total = data.reduce((sum, d) => sum + d.count, 0);
