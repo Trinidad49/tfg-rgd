@@ -50,36 +50,48 @@ function ChartFilterPanel({ questions, filters, setFilters }) {
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Typography>Filter Results</Typography>
       </AccordionSummary>
-      <AccordionDetails>
-        <Box display="flex" gap={1} alignItems="center" mb={2}>
-          <Box flexGrow={1}>
+      <AccordionDetails sx={{ maxWidth: "100%", overflowX: "hidden" }}>
+        <Box display="flex" gap={1} alignItems="center" mb={2} flexWrap="wrap">
+          <Box sx={{ flex: 1, minWidth: 0 }}>
             <Select
               value={newFilterQuestion}
               onChange={(e) => setNewFilterQuestion(e.target.value)}
               displayEmpty
               size="small"
               fullWidth
+              renderValue={(selected) =>
+                selected ? (
+                  <Typography noWrap>{selected}</Typography>
+                ) : (
+                  <Typography color="text.secondary">Select filter question</Typography>
+                )
+              }
             >
-              <MenuItem value="" disabled>Select filter question</MenuItem>
+              <MenuItem value="" disabled>
+                <Typography noWrap>Select filter question</Typography>
+              </MenuItem>
               {filterableQuestions
                 .filter((q) => !filters[q.text])
                 .map((q) => (
                   <MenuItem key={q.text} value={q.text}>
-                    {q.text}
+                    <Typography noWrap maxWidth="300px">{q.text}</Typography>
                   </MenuItem>
                 ))}
             </Select>
           </Box>
-          <Button onClick={addFilter} variant="outlined" size="small">
+          <Button onClick={addFilter} variant="outlined" size="small" sx={{ whiteSpace: "nowrap" }}>
             Add
           </Button>
         </Box>
+
         {Object.keys(filters).map((questionText) => {
           const question = questions.find((q) => q.text === questionText);
           if (!question) return null;
           return (
             <Box key={questionText} mb={2}>
-              <Typography variant="subtitle2">{questionText}</Typography>
+              <Typography variant="subtitle2" noWrap maxWidth="100%">
+                {questionText}
+              </Typography>
               <FormGroup>
                 {question.answers.map((a) => (
                   <FormControlLabel
