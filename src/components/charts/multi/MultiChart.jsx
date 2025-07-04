@@ -66,29 +66,45 @@ export const MultiChart = ({ dataA, dataB, chartType, surveyATitle, surveyBTitle
   };
 
   return (
-    <Box display="flex" flexDirection="column" alignItems="center">
-      <Box width="100%" maxWidth={800} height={600} ref={chartRef}>
-        <MultiRenderer
-          type="groupedBar"
-          data={mergedData}
-          title={title}
-          surveyATitle={surveyATitle}
-          surveyBTitle={surveyBTitle}
-        />
-      </Box>
+    <Box display="flex" justifyContent="center" width="100%">
+      <Box
+        display="flex"
+        flexDirection="column"
+        width="70%"
+        paddingX={4}
+        paddingY={4}
+        gap={4}
+        alignItems="center" // center child items horizontally inside this column
+      >
+        <Box height={600} ref={chartRef} width="100%">
+          <MultiRenderer
+            type="groupedBar"
+            data={mergedData}
+            title={title}
+            surveyATitle={surveyATitle}
+            surveyBTitle={surveyBTitle}
+          />
+        </Box>
 
-      <MultiControls
-        chartType="groupedBar"
-        title={title}
-        onTitleChange={(e) => setTitle(e.target.value)}
-        onDownload={handleDownload}
-        downloadChart={handleCSVDownload}
-      />
-      <TableData
-        data={mergedData}
-        surveyATitle={surveyATitle}
-        surveyBTitle={surveyBTitle}
-      />
+        <Box width="100%">
+          <MultiControls
+            chartType="groupedBar"
+            title={title}
+            onTitleChange={(e) => setTitle(e.target.value)}
+            onDownload={handleDownload}
+            downloadChart={handleCSVDownload}
+          />
+        </Box>
+
+        <Box display="flex" justifyContent="center" width="100%">
+          <TableData
+            data={mergedData}
+            surveyATitle={surveyATitle}
+            surveyBTitle={surveyBTitle}
+          />
+        </Box>
+      </Box>
     </Box>
+
   );
 };

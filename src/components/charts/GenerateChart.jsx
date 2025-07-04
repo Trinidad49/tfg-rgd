@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Box } from "@mui/material";
+import { Box, Container } from "@mui/material";
 import { toPng } from "html-to-image";
 import { ChartRenderer } from "./ChartRenderer";
 import { ChartControls } from "./ChartControls";
@@ -69,8 +69,16 @@ export const GenerateChart = ({ text, data, optional, chartType, setChartType })
   };
 
   return (
-    <Box display="flex" flexDirection="column" alignItems="center">
-      <Box width="100%" maxWidth={800} height={600} ref={chartRef}>
+    <Box
+      display="flex"
+      flexDirection="column"
+      alignContent="center"
+      width="70%"
+      paddingX={4}
+      paddingY={4}
+      gap={4}
+    >
+      <Box height={600} ref={chartRef}>
         <ChartRenderer
           type={chartType}
           data={data}
@@ -78,15 +86,25 @@ export const GenerateChart = ({ text, data, optional, chartType, setChartType })
           title={title}
         />
       </Box>
-      <ChartControls
-        chartType={chartType}
-        onTypeChange={(e) => setChartType(e.target.value)}
-        title={title}
-        onTitleChange={(e) => setTitle(e.target.value)}
-        onDownload={handleDownload}
-        downloadChart={handleCSVDownload}
-      />
-      <ChartTable data={data} optional={optional} chartType={chartType} />
+
+      <Box>
+        <ChartControls
+          chartType={chartType}
+          onTypeChange={(e) => setChartType(e.target.value)}
+          title={title}
+          onTitleChange={(e) => setTitle(e.target.value)}
+          onDownload={handleDownload}
+          downloadChart={handleCSVDownload}
+        />
+      </Box>
+
+      <Box display="flex" justifyContent="center" width="100%">
+        <ChartTable
+          data={data}
+          optional={optional}
+          chartType={chartType}
+        />
+      </Box>
     </Box>
   );
 };

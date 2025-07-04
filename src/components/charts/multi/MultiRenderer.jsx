@@ -24,11 +24,11 @@ export const MultiRenderer = ({ data, title, surveyATitle, surveyBTitle }) => {
       data={formattedData}
       keys={keys}
       indexBy="group"
-      margin={{ top: 50, right: 130, bottom: 50, left: 80 }}
+      margin={{ top: 50, right: 130, bottom: 50, left: 150 }}
       padding={0.3}
       layout="horizontal"
       groupMode="grouped"
-      colors={{ scheme: "nivo" }}
+      colors={{ scheme: "category10" }}
       borderColor={{ from: "color", modifiers: [["darker", 1.6]] }}
       labelSkipWidth={12}
       labelSkipHeight={12}
