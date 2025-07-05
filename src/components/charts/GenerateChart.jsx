@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Box, Container } from "@mui/material";
+import { Box } from "@mui/material";
 import { toPng } from "html-to-image";
 import { ChartRenderer } from "./ChartRenderer";
 import { ChartControls } from "./ChartControls";
@@ -8,6 +8,7 @@ import { ChartTable } from "./ChartTable";
 export const GenerateChart = ({ text, data, optional, chartType, setChartType }) => {
   const [title, setTitle] = useState(text);
   const chartRef = useRef(null);
+  const tableRef = useRef(null);
 
   useEffect(() => {
     setTitle(text);
@@ -24,6 +25,21 @@ export const GenerateChart = ({ text, data, optional, chartType, setChartType })
         })
         .catch((error) => {
           console.error("Error generating chart image:", error);
+        });
+    }
+  };
+
+  const handleDownloadTable = () => {
+    if (tableRef.current) {
+      toPng(tableRef.current)
+        .then((dataUrl) => {
+          const link = document.createElement("a");
+          link.href = dataUrl;
+          link.download = `${title || "table-data"}.png`;
+          link.click();
+        })
+        .catch((error) => {
+          console.error("Error generating table image:", error);
         });
     }
   };
@@ -95,10 +111,11 @@ export const GenerateChart = ({ text, data, optional, chartType, setChartType })
           onTitleChange={(e) => setTitle(e.target.value)}
           onDownload={handleDownload}
           downloadChart={handleCSVDownload}
+          onDownloadTable={handleDownloadTable}
         />
       </Box>
 
-      <Box display="flex" justifyContent="center" width="100%">
+      <Box display="flex" justifyContent="center" width="100%" ref={tableRef}>
         <ChartTable
           data={data}
           optional={optional}

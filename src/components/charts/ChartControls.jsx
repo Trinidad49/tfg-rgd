@@ -13,7 +13,7 @@ import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import ImageIcon from "@mui/icons-material/Image";
 
-export const ChartControls = ({ chartType, onTypeChange, title, onTitleChange, onDownload, downloadChart }) => {
+export const ChartControls = ({ chartType, onTypeChange, title, onTitleChange, onDownload, downloadChart, onDownloadTable }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -27,6 +27,11 @@ export const ChartControls = ({ chartType, onTypeChange, title, onTitleChange, o
 
   const handleDownloadCSV = () => {
     downloadChart();
+    handleMenuClose();
+  };
+
+  const handleDownloadTablePNG = () => {
+    onDownloadTable();
     handleMenuClose();
   };
 
@@ -70,6 +75,12 @@ export const ChartControls = ({ chartType, onTypeChange, title, onTitleChange, o
             <ImageIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText>Chart as PNG</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={handleDownloadTablePNG}>
+          <ListItemIcon>
+            <ImageIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Table as PNG</ListItemText>
         </MenuItem>
         <MenuItem onClick={handleDownloadCSV}>
           <ListItemIcon>

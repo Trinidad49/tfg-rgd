@@ -7,6 +7,7 @@ import { TableData } from "./TableData";
 
 export const MultiChart = ({ dataA, dataB, chartType, surveyATitle, surveyBTitle }) => {
   const chartRef = useRef(null);
+  const tableRef = useRef(null);
   const [title, setTitle] = useState("Multi-Survey Chart");
 
   const mergedData = [];
@@ -35,6 +36,21 @@ export const MultiChart = ({ dataA, dataB, chartType, surveyATitle, surveyBTitle
         })
         .catch((error) => {
           console.error("Error generating chart image:", error);
+        });
+    }
+  };
+
+  const handleDownloadTable = () => {
+    if (tableRef.current) {
+      toPng(tableRef.current)
+        .then((dataUrl) => {
+          const link = document.createElement("a");
+          link.href = dataUrl;
+          link.download = `${title || "multi-table"}.png`;
+          link.click();
+        })
+        .catch((error) => {
+          console.error("Error generating table image:", error);
         });
     }
   };
@@ -74,9 +90,9 @@ export const MultiChart = ({ dataA, dataB, chartType, surveyATitle, surveyBTitle
         paddingX={4}
         paddingY={4}
         gap={4}
-        alignItems="center" // center child items horizontally inside this column
+        alignItems="center"
       >
-        <Box height={600} ref={chartRef} width="100%">
+        <Box height={600} ref={chartRef} width="90%">
           <MultiRenderer
             type="groupedBar"
             data={mergedData}
@@ -93,10 +109,11 @@ export const MultiChart = ({ dataA, dataB, chartType, surveyATitle, surveyBTitle
             onTitleChange={(e) => setTitle(e.target.value)}
             onDownload={handleDownload}
             downloadChart={handleCSVDownload}
+            onDownloadTable={handleDownloadTable}
           />
         </Box>
 
-        <Box display="flex" justifyContent="center" width="100%">
+        <Box display="flex" justifyContent="center" width="100%" ref={tableRef}>
           <TableData
             data={mergedData}
             surveyATitle={surveyATitle}
@@ -105,6 +122,5 @@ export const MultiChart = ({ dataA, dataB, chartType, surveyATitle, surveyBTitle
         </Box>
       </Box>
     </Box>
-
   );
 };
